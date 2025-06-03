@@ -1,0 +1,472 @@
+module chemistry
+
+  use grid, only:  nx,ny,nzm, nz, &
+       dimx1_s,dimx2_s,dimy1_s,dimy2_s, &
+     z, zi, pres, adz, dz, dx, nx_gl, &
+     time, dt, ncycle, nstat, nstatfrq, nrestart, day, &
+     rank, dompi, masterproc, nsubdomains, save3Dbin, &
+     case, caseid
+
+  use vars, only: rho, t0, dtn, qcl, tabs0, pres
+  use chem_isoprene_Parameters, only: NVAR, NSPEC, NFIX, ind_Isoprene, NREACT  ! NSPEC=NVAR+NFIX
+  use chem_isoprene_Monitor, only: SPC_NAMES
+  use chem_isoprene_Function, only: Fun
+  use chem_isoprene_rate_functions, only: compute_rate_constants
+  use chemistry_params, only: flag_gchemvar_out3D,  &
+       gas_init_name, gas_init_value, gas_out3D_name, p0, rhol
+       
+
+  use chem_iepox_aqueous, only: naqchem_fields, iIEPOX, iTETROL, iIEPOX_SO4, &
+       aq_species_names, flag_aqchemvar_out3D
+  
+  
+  use micro_params, only: MW_air, avgd
+  use microphysics, only: micro_field, iqcl
+  
+  implicit none
+
+  integer ngchem_fields, ngchem_fixed, ngchem_spec   ! equal to NVAR, NFIX, NSPEC  respectively
+
+  integer nchem_fields_3Dsave 
+  
+  logical :: isallocatedCHEM = .false.
+
+  real, allocatable, dimension(:,:,:,:) :: gchem_field  ! in ppv air
+  real, allocatable, dimension(:,:,:,:) :: aqchem_field  ! in kg/kg
+  real, allocatable, dimension(:,:) :: gchem_profile_fixed ! in ppv 
+  real, allocatable, dimension(:) :: M_profile  !  air density in molec/cm3
+  real, allocatable, dimension(:,:) :: rate_const  ! array of gas reaction rate constants
+
+  real, allocatable, dimension(:,:) :: gchem_horiz_mean_tend ! in ppv/s
+  real, allocatable, dimension(:,:) :: aqchem_horiz_mean_tend ! in kg/kg/s
+  real, allocatable, dimension(:,:) :: & ! statistical arrays
+       gchwle, &  ! resolved vertical flux
+       gchadv, &  ! tendency due to vertical advection
+       gchdiff, & ! tend. vertical diffusion
+       gchwsb  ! SGS vertical flux
+
+  real, allocatable, dimension(:,:) :: & ! statistical arrays
+       aqchwle, &  ! resolved vertical flux
+       aqchadv, &  ! tendency due to vertical advection
+       aqchdiff, & ! tend. vertical diffusion
+       aqchwsb  ! SGS vertical flux
+
+  
+  real, allocatable, dimension(:,:,:) :: fluxbch, fluxtch  ! surface/top fluxes
+
+  real gas_output_scale  ! convert all gas chem output to ppb
+  real  gas_input_scale   ! convert all gas chem input to parts per unit air
+
+
+  
+CONTAINS
+
+  subroutine chem_setparm()
+    implicit none
+   
+    integer ierr, ios, ios_missing_namelist, place_holder
+    ngchem_fields = NVAR    ! number of advected che fields
+    ngchem_fixed = NFIX     ! number of fixed chem profiles
+    ngchem_spec = NSPEC  ! = NVAR + NFIX
+    
+    gas_output_scale = 1.e9  ! convert all gas chem output to ppb
+    gas_input_scale = 1./gas_output_scale  ! convert all input from ppb to ppunit
+    NAMELIST /CHEMISTRY/   gas_init_name, gas_init_value, gas_out3D_name
+        
+    ! read in namelist
+    NAMELIST /BNCUIODSBJCB/ place_holder
+    open(55,file='./'//trim(case)//'/prm', status='old',form='formatted') 
+    read (UNIT=55,NML=BNCUIODSBJCB,IOSTAT=ios_missing_namelist)
+    rewind(55) !note that one must rewind before searching for new namelists
+    read (55,CHEMISTRY,IOSTAT=ios)
+
+    if (ios.ne.0) then
+       if(ios.ne.ios_missing_namelist) then
+           write(*,*) '****** ERROR: bad specification in CHEMISTRY namelist'
+           rewind(55)
+           read (55,CHEMISTRY) ! this should give a useful error message
+        call task_abort()
+     elseif(masterproc) then
+        write(*,*) '****************************************************'
+        write(*,*) '****** No CHEMISTRY namelist in prm file *********'
+        write(*,*) '****************************************************'
+     end if
+  end if
+  close(55)
+
+    ! output namelist for documentation  
+   if(masterproc) then
+      open(unit=55,file='./'//trim(case)//'/'//trim(case)//'_'//trim(caseid)//'.nml', form='formatted', position='append')    
+      write (unit=55,nml=CHEMISTRY,IOSTAT=ios)
+      write(55,*) ' '
+      close(unit=55)
+   end if
+    
+    ! allocate advection fields
+   if(.not.isallocatedCHEM) then
+       ! allocate isoprene gas chemistry fields and related variables
+       allocate(gchem_field(dimx1_s:dimx2_s,dimy1_s:dimy2_s,nzm,NVAR))
+       allocate(gchem_profile_fixed(nzm, ngchem_fixed), M_profile(nzm))
+       allocate(gchem_horiz_mean_tend(nzm, NVAR))
+       allocate(rate_const(nzm, NREACT))
+
+       ! allocate aqueous IEPOX fields
+       allocate(aqchem_field(dimx1_s:dimx2_s,dimy1_s:dimy2_s,nzm,naqchem_fields))
+       allocate(aqchem_horiz_mean_tend(nzm, naqchem_fields))
+       
+       allocate(gchwle(nz, ngchem_fields),gchadv(nz,ngchem_fields), &
+            gchdiff(nz,ngchem_fields),gchwsb(nz,ngchem_fields))
+       allocate(aqchwle(nz, ngchem_fields),aqchadv(nz,ngchem_fields), &
+            aqchdiff(nz,ngchem_fields),aqchwsb(nz,ngchem_fields))
+
+       allocate(fluxbch(nx,ny,ngchem_fields), fluxtch(nx,ny,ngchem_fields))
+    end if   
+
+    
+
+end subroutine chem_setparm
+  
+subroutine chem_init()
+  ! called at start of run or restart
+  implicit none
+  integer i,j,k
+  integer v_selected ! index of namelist input variables
+  integer v ! index of kpp variable
+  logical match
+
+  rate_const = 0.
+  M_profile = 0.001 * RHO * avgd/ MW_air
+  ! initialize gas fields
+  gchem_profile_fixed = 0.
+  
+  
+  do v_selected = 1,ngchem_spec
+     match = .false.
+     do v=ngchem_fields+1, ngchem_spec  ! search only over fixed-variable names
+        if(gas_init_name(v_selected)==trim(SPC_NAMES(v))) then
+           match=.true.
+           exit
+        end if
+     end do   
+     if(match) then
+        gchem_profile_fixed(:, v-ngchem_fields) = gas_init_value(v_selected)* &
+             gas_input_scale
+        if (masterproc) then
+           write(*,*) 'SET FIXED CHEM PROFILE: ', gas_init_name(v_selected),                 gas_init_value(v_selected)
+        end if   
+
+     end if
+    
+  end do   
+
+  
+  if(nrestart.eq.0) then
+     ! initialize gas chem fields
+     gchem_field = 0.
+     ! compute conversion profile 
+     do v_selected = 1,ngchem_spec
+        match = .false.   
+        do v = 1,ngchem_fields   ! search only over variable names  
+           if(gas_init_name(v_selected)==trim(SPC_NAMES(v))) then
+              match=.true.
+              exit
+           end if
+        end do  
+        if(match) then
+           do i = 1, nx
+              do j = 1, ny
+                 gchem_field(i,j, :, v) = gas_init_value(v_selected)*gas_input_scale
+              end do
+           end do   
+        end if
+        ! if (v_selected.eq.1.and.masterproc) write(*,*) 'Initialized ISOP102 to ', gchem_field(1,1,0,1)
+      
+     end do
+     ! initialize aqchem fields as zero
+     aqchem_field = 0.
+  end if  ! restart       
+  
+  ! set flags for 3d output based on namelist input 
+  flag_gchemvar_out3D(:)=.false.
+  nchem_fields_3Dsave = 0.
+  do v = 1,ngchem_fields
+     if(any(gas_out3D_name==trim(SPC_NAMES(v)))) then
+        flag_gchemvar_out3D(v) = .true.
+        nchem_fields_3Dsave = nchem_fields_3Dsave + 1
+        if (masterproc) write(*,*) &
+             'Chem 3d output field added: ', trim(SPC_NAMES(v))
+     end if
+  end do
+
+  ! for now save all aqeous variables
+  flag_aqchemvar_out3D(:) = .true.
+  nchem_fields_3Dsave = nchem_fields_3Dsave + naqchem_fields
+  
+  ! initialize some statistics profiles, not output yet
+  gchwle = 0.
+  gchadv = 0.
+  gchdiff = 0.
+  gchwsb = 0.
+
+  aqchwle = 0.
+  aqchadv = 0.
+  aqchdiff = 0.
+  aqchwsb = 0.
+
+  
+  ! top and bottom fluxes of fields
+  fluxbch = 0.
+  fluxtch = 0.
+
+end subroutine chem_init  
+
+subroutine chem_hbuf_init(namelist,deflist,unitlist,status,average_type,count,chemcount)
+
+  
+character(*) namelist(*), deflist(*), unitlist(*)
+integer status(*), average_type(*), count,chemcount, n
+
+character*8 name
+character*8 tend_name
+character*80 longname
+character*10 units
+
+chemcount = 0  
+
+do n = 1,ngchem_fields
+    name = trim(SPC_NAMES(n))
+    longname = trim(SPC_NAMES(n))
+    units = 'ppbv'
+    call add_to_namelist(count,chemcount,name,longname,units,0)
+
+    longname = trim(SPC_NAMES(n)) // ' tendency due to gas reaction'
+    units = 'ppbv/s'
+    call add_to_namelist(count,chemcount,trim(SPC_NAMES(n))//'+',longname,units,0)
+end do
+
+do n = 1,ngchem_fixed
+   name = trim(SPC_NAMES(n+ngchem_fields))
+   longname = name // ' Fixed Species'
+   units = 'ppbv'
+   call add_to_namelist(count,chemcount,name,longname,units,0)
+end do
+
+do n = 1,naqchem_fields
+    name = trim(aq_species_names(n))
+    longname = trim(aq_species_names(n))
+    units = 'kg/kg'
+    call add_to_namelist(count,chemcount,name,longname,units,0)
+
+    longname = trim(aq_species_names(n)) // ' tendency due to aqueous reaction'
+    units = 'kg/kg/s'
+    call add_to_namelist(count,chemcount,trim(aq_species_names(n))//'+',longname,units,0)
+end do
+
+if(masterproc) then
+   write(*,*) 'Added ', chemcount, ' arrays to statistics for gas and aqueous chemical species'
+end if
+
+
+end subroutine chem_hbuf_init
+  
+subroutine chem_flux()  
+  fluxbch = 0.
+  fluxtch = 0.
+
+  fluxbch(:,:,ind_Isoprene) = 1.*1.e-9 ! converted from (ppb m/s) to  m/s
+              ! NEED SURFACE FLUX INPUT PARAMETER AND/OR PARAMETERIZATION
+ 
+end subroutine chem_flux
+  
+subroutine chem_finalize()
+  ! deallocate
+  implicit none
+  integer :: ierr
+
+  if(isallocatedCHEM) then
+     deallocate(gchem_field, STAT=ierr)
+     deallocate(aqchem_field, STAT=ierr)
+
+     deallocate(gchem_profile_fixed, gchwle, gchadv, gchdiff, gchwsb,M_profile,STAT=ierr)
+     deallocate(aqchwle, aqchadv, aqchdiff, aqchwsb,STAT=ierr)
+     deallocate(gchem_horiz_mean_tend)
+     deallocate(aqchem_horiz_mean_tend)
+     deallocate(rate_const)
+     deallocate(fluxbch, fluxtch)
+     if(ierr.ne.0) then
+        write(*,*) 'Failed to deallocated chem arrays on proc ', rank
+     end if
+  end if
+  
+end subroutine chem_finalize
+
+subroutine chem_proc()
+  implicit none
+  integer :: i,j,k,n
+  real, dimension(nzm,NVAR) :: var_profile
+  real, dimension(nzm,NVAR) :: gas_column_tend_profile ! in molecules/cm3/s
+  real, dimension(NVAR) :: adjusted_tendency
+  real, dimension(nzm,NFIX) :: fixed_profile
+
+  real, dimension(nzm, naqchem_fields) :: aq_column_tend_profile
+
+
+  ! compute gas chem tendencies and apply them to gas chem fields
+  call compute_rate_constants(nzm, t0, M_profile, rate_const)
+
+  !do n = 1, NREACT
+  !   write(*,*) 'rate_const ', n, rate_const(1,n)
+  !end do
+  gchem_horiz_mean_tend(:,:) = 0.
+  do j = 1,ny
+     do i = 1,nx
+        do k = 1,nzm
+           var_profile(k,:) = gchem_field(i,j,k,:)*M_profile(k)
+           fixed_profile(k,:) = gchem_profile_fixed(k,:)*M_profile(k)
+        end do
+        gas_column_tend_profile(:,:) = 0.
+        call Fun(nzm, var_profile, fixed_profile, rate_const, gas_column_tend_profile)
+       
+        if (i.eq.1.and.j.eq.1) then
+           !do n = 1, NVAR
+           !   write(*,*) 'tendency ', n, dtn*gas_column_tend_profile(nzm, n)/M_profile(nzm)
+           !end do
+        end if   
+        !gas_column_tend_profile(:,:) = 0.
+        do k = 1,nzm
+           adjusted_tendency = gas_column_tend_profile(k,:)
+           where( gchem_field(i,j,k,:) + dtn*gas_column_tend_profile(k,:)/M_profile(k) < 0.)
+              adjusted_tendency = -M_profile(k)*gchem_field(i,j,k,:)/dtn
+           end where   
+           gchem_field(i,j,k,:) = gchem_field(i,j,k,:) + dtn*adjusted_tendency/M_profile(k)
+           gchem_horiz_mean_tend(k,:) = gchem_horiz_mean_tend(k,:) + adjusted_tendency/M_profile(k)
+        end do   
+     end do
+  end do   
+  gchem_horiz_mean_tend = gchem_horiz_mean_tend/(nx*ny)  
+
+  ! compute aqueous chemistry tendencies and apply them to aqueous fields
+
+  
+  aqchem_horiz_mean_tend(:,:) = 0.
+  do j = 1,ny
+     do i = 1,nx
+        aq_column_tend_profile(:,:) = 0.
+        ! compute radius - for now assume monodisperse
+        r = 
+        ! compute gas inputs
+        ! compute aqeous inputs
+        call iepox_aqueous_tendencies(nzm, tabs0, pres/p0, Rp, &
+             micro_field(i,j,:,iqcl)*(rho/rhol), H, NO3, SO4, HSO4, &
+             
+             ! convert gas tendencies
+             ! convert aqueous tendencies
+        do k = 1,nzm
+           aq_column_tend_profile(k, iIEPOX) = micro_field(i,j,k,iqcl)
+           aq_column_tend_profile(k, iTETROL) = micro_field(i,j,k,iqcl)*0.1
+           aq_column_tend_profile(k, iIEPOX_SO4) = micro_field(i,j,k,iqcl)*0.0001
+        end do
+        do k = 1,nzm
+           aqchem_field(i,j,k,:) = aqchem_field(i,j,k,:) + dtn*aq_column_tend_profile(k,:)
+           aqchem_horiz_mean_tend(k,:) = aqchem_horiz_mean_tend(k,:) + aq_column_tend_profile(k,:)
+        end do
+     end do
+  end do
+  aqchem_horiz_mean_tend = aqchem_horiz_mean_tend/(nx*ny)
+  
+end subroutine chem_proc
+
+subroutine chem_print()
+  implicit none
+end subroutine chem_print  
+
+subroutine chem_statistics()
+  
+  use hbuffer, only: hbuf_put
+  implicit none
+  ! average fields in space for .stat file
+
+  real, dimension(nzm) :: tr0, tendency
+  real, dimension(nzm) :: zeros
+
+  real factor_xy
+  integer i,j,k,m, n, ii, jj, nn, ncond
+
+  character *8 name
+  character *8 tend_name
+  factor_xy = 1./float(nx*ny)
+
+  zeros(:) = 0.
+  do n = 1,ngchem_fields
+    ! compute horizontal mean of all gas chem fields  
+    do k = 1,nzm
+       tr0(k) = SUM(gchem_field(1:nx,1:ny,k,n))
+    end do
+    if(n.eq.1) write(*,*) 'IP1O2 mean, (1,1,1) = ', tr0(1), gchem_field(1,1,1,1)*1.e9
+
+    call hbuf_put(trim(SPC_NAMES(n)), tr0, gas_output_scale*factor_xy) ! factor is 1/(nx * ny)
+    call hbuf_put(trim(SPC_NAMES(n))//'+', gchem_horiz_mean_tend(:, n), gas_output_scale)
+  end do  
+
+  do n = 1,ngchem_fixed
+     name = trim(SPC_NAMES(n+ngchem_fields))
+     call hbuf_put(name, gchem_profile_fixed(:, n), gas_output_scale)
+  end do
+
+  do n = 1,naqchem_fields
+    ! compute horizontal mean of all aq chem fields  
+    do k = 1,nzm
+       tr0(k) = SUM(aqchem_field(1:nx,1:ny,k,n))
+    end do
+
+    call hbuf_put(trim(aq_species_names(n)), tr0, factor_xy) ! factor is 1/(nx * ny)
+    call hbuf_put(trim(aq_species_names(n))//'+', aqchem_horiz_mean_tend(:, n), 1.)
+  end do  
+  
+  
+end subroutine chem_statistics  
+
+subroutine chem_write_fields3D(nfields1)
+  implicit none
+  integer, intent(inout) :: nfields1
+  character *80 long_name
+  character *8 name
+  character *10 units
+  integer :: i, j, k, f 
+  real(4), dimension(nx,ny,nzm) :: tmp
+
+  do f = 1,ngchem_fields
+     if(flag_gchemvar_out3D(f)) then  
+        nfields1=nfields1+1
+        do k=1,nzm
+           do j=1,ny
+              do i=1,nx
+                 tmp(i,j,k)=gchem_field(i,j,k,f)*gas_output_scale
+              end do
+           end do
+        end do
+        name=TRIM(SPC_NAMES(f))
+        long_name=TRIM(SPC_NAMES(f))
+        units='ppbv'
+        call compress3D(tmp,nx,ny,nzm,name,long_name,units, &
+           save3Dbin,dompi,rank,nsubdomains)
+     end if
+  end do
+
+  do f = 1,naqchem_fields
+     if(flag_aqchemvar_out3D(f)) then  
+        nfields1=nfields1+1
+        tmp = aqchem_field(:,:,:,f)
+        name=TRIM(aq_species_names(f))
+        long_name=TRIM(aq_species_names(f))
+        units='kg/kg'
+        call compress3D(tmp,nx,ny,nzm,name,long_name,units, &
+           save3Dbin,dompi,rank,nsubdomains)
+     end if
+  end do
+
+end subroutine chem_write_fields3D
+
+
+
+end module chemistry

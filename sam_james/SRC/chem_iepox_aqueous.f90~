@@ -1,0 +1,16 @@
+module chem_iepox_aqueous
+
+  implicit none
+
+  ! Aqueous chemistry variables
+  integer, parameter :: naqchem_fields = 3
+  integer :: iIEPOX = 1
+  integer :: iTETROL = 2
+  integer :: iIEPOX_SO4 = 3
+
+   logical, dimension(naqchem_fields), public :: flag_aqchemvar_out3D  ! which chem array to  output
+
+   character(LEN=7), parameter, dimension(naqchem_fields) :: aq_species_names = (/ &
+        'IEPOXa ', 'TETROLa', 'IPXSO4a' /)
+
+end module chem_iepox_aqueous   

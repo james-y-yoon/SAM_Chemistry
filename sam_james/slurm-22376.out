@@ -1,0 +1,461 @@
+ number of MPI tasks:           1
+           **************************************************
+           **************************************************
+           *                                                *
+           *      *****          **       ***          **   *
+           *    ***   ***       ****      ****       ****   *
+           *   ***     ***     *** ***    *****     *****   *
+           *    ***           ***   ***   *** **   ** ***   *
+           *       ***       ***     ***  ***  ** **  ***   *
+           *          ***    ***     ***  ***   ***   ***   *
+           *   ***     ***   ***********  ***         ***   *
+           *    ***   ***    ***     ***  ***         ***   *
+           *      *****      ***     ***  ***         ***   *
+           *                                                *
+           **************************************************
+           **************************************************
+           ***       System for Atmospheric Modeling      ***
+           ***                    SAM                     ***
+                     Version 6.10.9 (Feb 2016)  
+           **************************************************
+           ***     (C) Marat Khairoutdinov                ***
+           *** School of Marine and Atmospheric Sciences  ***
+           ***       Stony Brook University               ***
+           **************************************************
+           ***       The model can be used only with      ***
+           ***         permission from the author!        ***
+           ***       No transfer to any third party       ***
+           ***                is allowed!                 ***
+           **************************************************
+           **************************************************
+           ***       DATE 04/25/25 TIME 17:42:52          ***
+           **************************************************
+ 
+ 
+ surface pressure:    1010.09000000000     
+Initial inversion height is    220.0 meters.  This is used in the aerosol initialization.
+ SET FIXED CHEM PROFILE: OH               2.043490000000000E-004
+ SET FIXED CHEM PROFILE: HO2              6.130000000000000E-003
+ SET FIXED CHEM PROFILE: RO2              6.130000000000000E-003
+ SET FIXED CHEM PROFILE: NO2              0.300000000000000     
+ SET FIXED CHEM PROFILE: NO               6.000000000000000E-002
+ Chem 3d output field added: PAN
+ Chem 3d output field added: Isopr
+ Chem 3d output field added: IEPOX
+ Initial Sounding:
+  k      z    rho     rhoi    s      h     h*      qt      u      v     adz     
+ Nsq
+  96  3820.0  0.804  0.806 315.06 334.19 335.79   7.65  -3.36  -3.55  1.000     0.1722E-03
+  95  3780.0  0.808  0.809 314.87 334.21 335.78   7.74  -3.27  -3.63  1.000     0.1723E-03
+  94  3740.0  0.811  0.813 314.67 334.23 335.77   7.82  -3.18  -3.72  1.000     0.1725E-03
+  93  3700.0  0.814  0.816 314.48 334.25 335.76   7.91  -3.09  -3.80  1.000     0.1726E-03
+  92  3660.0  0.818  0.819 314.28 334.26 335.76   7.99  -3.00  -3.88  1.000     0.1727E-03
+  91  3620.0  0.821  0.823 314.08 334.28 335.75   8.08  -2.91  -3.97  1.000     0.1729E-03
+  90  3580.0  0.824  0.826 313.89 334.30 335.74   8.16  -2.82  -4.05  1.000     0.1568E-03
+  89  3540.0  0.828  0.829 313.71 334.26 335.78   8.22  -2.78  -4.16  1.000     0.1552E-03
+  88  3500.0  0.831  0.833 313.53 334.22 335.83   8.27  -2.74  -4.27  1.000     0.1553E-03
+  87  3460.0  0.835  0.836 313.36 334.17 335.88   8.33  -2.71  -4.38  1.000     0.1554E-03
+  86  3420.0  0.838  0.840 313.18 334.13 335.93   8.38  -2.67  -4.49  1.000     0.1555E-03
+  85  3380.0  0.841  0.843 313.00 334.08 335.98   8.43  -2.63  -4.60  1.000     0.1556E-03
+  84  3340.0  0.845  0.847 312.82 334.04 336.03   8.48  -2.60  -4.71  1.000     0.1557E-03
+  83  3300.0  0.848  0.850 312.65 333.99 336.08   8.54  -2.56  -4.82  1.000     0.1558E-03
+  82  3260.0  0.852  0.853 312.47 333.94 336.14   8.59  -2.53  -4.94  1.000     0.1559E-03
+  81  3220.0  0.855  0.857 312.29 333.90 336.19   8.64  -2.49  -5.05  1.000     0.1560E-03
+  80  3180.0  0.859  0.860 312.11 333.85 336.25   8.69  -2.45  -5.16  1.000     0.1561E-03
+  79  3140.0  0.862  0.864 311.93 333.80 336.31   8.75  -2.42  -5.27  1.000     0.1562E-03
+  78  3100.0  0.866  0.867 311.75 333.76 336.36   8.80  -2.38  -5.38  1.000     0.1563E-03
+  77  3060.0  0.869  0.871 311.57 333.71 336.42   8.85  -2.35  -5.49  1.000     0.1564E-03
+  76  3020.0  0.873  0.874 311.39 333.66 336.48   8.91  -2.31  -5.60  1.000     0.1454E-03
+  75  2980.0  0.876  0.878 311.23 333.63 336.58   8.96  -2.35  -5.72  1.000     0.1446E-03
+  74  2940.0  0.880  0.881 311.06 333.61 336.68   9.02  -2.39  -5.83  1.000     0.1447E-03
+  73  2900.0  0.883  0.885 310.89 333.58 336.79   9.07  -2.44  -5.94  1.000     0.1448E-03
+  72  2860.0  0.887  0.888 310.73 333.55 336.89   9.13  -2.48  -6.06  1.000     0.1449E-03
+  71  2820.0  0.890  0.892 310.56 333.52 337.00   9.18  -2.53  -6.17  1.000     0.1450E-03
+  70  2780.0  0.894  0.896 310.39 333.49 337.10   9.24  -2.57  -6.28  1.000     0.1451E-03
+  69  2740.0  0.897  0.899 310.22 333.47 337.21   9.30  -2.61  -6.40  1.000     0.1452E-03
+  68  2700.0  0.901  0.903 310.06 333.44 337.32   9.35  -2.66  -6.51  1.000     0.1453E-03
+  67  2660.0  0.904  0.906 309.89 333.41 337.44   9.41  -2.70  -6.63  1.000     0.1454E-03
+  66  2620.0  0.908  0.910 309.72 333.38 337.55   9.46  -2.75  -6.74  1.000     0.1455E-03
+  65  2580.0  0.912  0.913 309.55 333.35 337.67   9.52  -2.79  -6.85  1.000     0.1456E-03
+  64  2540.0  0.915  0.917 309.38 333.32 337.78   9.57  -2.83  -6.97  1.000     0.1487E-03
+  63  2500.0  0.919  0.921 309.21 333.33 337.89   9.65  -2.92  -7.06  1.000     0.1544E-03
+  62  2460.0  0.923  0.924 309.03 333.41 337.98   9.75  -3.07  -7.13  1.000     0.1545E-03
+  61  2420.0  0.926  0.928 308.85 333.50 338.08   9.86  -3.22  -7.19  1.000     0.1546E-03
+  60  2380.0  0.930  0.932 308.67 333.58 338.17   9.96  -3.37  -7.25  1.000     0.1547E-03
+  59  2340.0  0.934  0.935 308.49 333.66 338.26  10.07  -3.53  -7.32  1.000     0.1548E-03
+  58  2300.0  0.937  0.939 308.31 333.74 338.36  10.17  -3.68  -7.38  1.000     0.1549E-03
+  57  2260.0  0.941  0.943 308.13 333.82 338.46  10.27  -3.83  -7.45  1.000     0.1687E-03
+  56  2220.0  0.945  0.947 307.93 333.94 338.51  10.40  -4.03  -7.49  1.000     0.2290E-03
+  55  2180.0  0.949  0.951 307.67 334.24 338.34  10.63  -4.42  -7.44  1.000     0.2293E-03
+  54  2140.0  0.953  0.955 307.40 334.53 338.18  10.85  -4.80  -7.39  1.000     0.1485E-03
+  53  2100.0  0.956  0.958 307.23 334.80 338.30  11.03  -5.13  -7.30  1.000     0.1355E-03
+  52  2060.0  0.960  0.962 307.07 335.06 338.48  11.20  -5.44  -7.21  1.000     0.1143E-03
+  51  2020.0  0.964  0.965 306.93 335.29 338.73  11.34  -5.71  -7.13  1.000     0.1046E-03
+  50  1980.0  0.967  0.969 306.81 335.51 339.02  11.48  -5.96  -7.06  1.000     0.1191E-03
+  49  1940.0  0.971  0.973 306.67 335.73 339.26  11.62  -6.17  -7.02  1.000     0.1233E-03
+  48  1900.0  0.975  0.976 306.53 335.95 339.49  11.77  -6.38  -6.99  1.000     0.1280E-03
+  47  1860.0  0.978  0.980 306.38 336.18 339.71  11.92  -6.54  -6.96  1.000     0.1351E-03
+  46  1820.0  0.982  0.984 306.22 336.43 339.90  12.08  -6.69  -6.92  1.000     0.1536E-03
+  45  1780.0  0.986  0.988 306.04 336.72 340.02  12.27  -6.84  -6.85  1.000     0.1463E-03
+  44  1740.0  0.990  0.991 305.87 336.99 340.17  12.45  -6.96  -6.77  1.000     0.1424E-03
+  43  1700.0  0.993  0.995 305.70 337.24 340.34  12.62  -7.07  -6.67  1.000     0.1418E-03
+  42  1660.0  0.997  0.999 305.53 337.45 340.52  12.77  -7.10  -6.51  1.000     0.1384E-03
+  41  1620.0  1.001  1.003 305.37 337.66 340.71  12.91  -7.08  -6.34  1.000     0.1310E-03
+  40  1580.0  1.005  1.007 305.21 337.85 340.93  13.05  -6.97  -6.15  1.000     0.1274E-03
+  39  1540.0  1.009  1.010 305.06 338.09 341.17  13.21  -6.79  -5.96  1.000     0.1245E-03
+  38  1500.0  1.012  1.014 304.91 338.37 341.42  13.38  -6.58  -5.77  1.000     0.1202E-03
+  37  1460.0  1.016  1.018 304.77 338.69 341.69  13.57  -6.35  -5.58  1.000     0.1109E-03
+  36  1420.0  1.020  1.022 304.64 339.06 342.01  13.77  -6.15  -5.38  1.000     0.1091E-03
+  35  1380.0  1.024  1.025 304.51 339.44 342.33  13.97  -5.98  -5.17  1.000     0.1100E-03
+  34  1340.0  1.027  1.029 304.38 339.85 342.66  14.19  -5.87  -4.94  1.000     0.1097E-03
+  33  1300.0  1.031  1.033 304.25 340.28 342.99  14.41  -5.82  -4.69  1.000     0.1125E-03
+  32  1260.0  1.035  1.037 304.12 340.71 343.32  14.63  -5.81  -4.43  1.000     0.1199E-03
+  31  1220.0  1.039  1.040 303.97 341.14 343.61  14.86  -5.84  -4.16  1.000     0.1270E-03
+  30  1180.0  1.042  1.044 303.82 341.60 343.88  15.11  -5.90  -3.89  1.000     0.1347E-03
+  29  1140.0  1.046  1.048 303.66 342.07 344.12  15.36  -5.96  -3.63  1.000     0.1421E-03
+  28  1100.0  1.050  1.052 303.49 342.55 344.34  15.62  -6.00  -3.38  1.000     0.1386E-03
+  27  1060.0  1.054  1.056 303.33 343.01 344.57  15.87  -6.03  -3.15  1.000     0.1349E-03
+  26  1020.0  1.058  1.060 303.17 343.45 344.81  16.11  -6.03  -2.95  1.000     0.1338E-03
+  25   980.0  1.062  1.064 303.01 343.88 345.07  16.35  -6.04  -2.76  1.000     0.1338E-03
+  24   940.0  1.066  1.068 302.85 344.29 345.33  16.57  -6.07  -2.59  1.000     0.1374E-03
+  23   900.0  1.070  1.072 302.68 344.67 345.57  16.79  -6.14  -2.42  1.000     0.1525E-03
+  22   860.0  1.074  1.076 302.50 344.98 345.75  16.99  -6.31  -2.24  1.000     0.1502E-03
+  21   820.0  1.078  1.080 302.32 345.23 345.95  17.16  -6.59  -2.08  1.000     0.1479E-03
+  20   780.0  1.082  1.084 302.14 345.39 346.15  17.30  -6.94  -1.93  1.000     0.1377E-03
+  19   740.0  1.086  1.088 301.98 345.44 346.40  17.38  -7.34  -1.82  1.000     0.1201E-03
+  18   700.0  1.090  1.092 301.83 345.36 346.74  17.41  -7.78  -1.74  1.000     0.1051E-03
+  17   660.0  1.094  1.096 301.71 345.15 347.15  17.38  -8.20  -1.70  1.000     0.9183E-04
+  16   620.0  1.098  1.100 301.60 344.91 347.63  17.32  -8.61  -1.67  1.000     0.8522E-04
+  15   580.0  1.102  1.104 301.49 344.64 348.14  17.25  -8.97  -1.63  1.000     0.9646E-04
+  14   540.0  1.106  1.108 301.38 344.36 348.61  17.19  -9.27  -1.57  1.000     0.1272E-03
+  13   500.0  1.110  1.113 301.22 344.12 348.94  17.16  -9.46  -1.44  1.000     0.1743E-03
+  12   460.0  1.115  1.117 301.01 343.96 349.04  17.18  -9.49  -1.25  1.000     0.2293E-03
+  11   420.0  1.119  1.122 300.73 344.01 348.87  17.31  -9.31  -1.05  1.000     0.2556E-03
+  10   380.0  1.124  1.126 300.43 344.31 348.58  17.55  -8.96  -0.90  1.000     0.2567E-03
+   9   340.0  1.129  1.131 300.11 344.80 348.28  17.87  -8.54  -0.80  1.000     0.2208E-03
+   8   300.0  1.133  1.135 299.85 345.30 348.16  18.18  -8.07  -0.72  1.000     0.2124E-03
+   7   260.0  1.138  1.140 299.59 345.62 348.08  18.41  -7.54  -0.63  1.000     0.4087E-03
+   6   220.0  1.143  1.145 299.10 345.79 347.05  18.67  -5.33  -0.30  1.000     0.1683E-03
+   5   180.0  1.147  1.149 298.89 345.82 347.17  18.77  -4.46  -0.21  1.000     0.1036E-03
+   4   140.0  1.152  1.154 298.77 345.77 347.62  18.80  -3.91  -0.16  1.000     0.9511E-04
+   3   100.0  1.156  1.158 298.65 345.72 348.11  18.82  -3.29  -0.13  1.000     0.1069E-03
+   2    60.0  1.160  1.162 298.52 345.66 348.55  18.85  -2.46  -0.10  1.000     0.1069E-03
+   1    20.0  1.164  1.166 298.39 345.60 348.99  18.88  -1.63  -0.06  1.000      0.000    
+  k      z    rho     rhoi    s      h     h*      qt      u      v     adz     
+ Nsq
+ 
+   k      z      dz     pres   presi   Tabs     tp     tpl      qt      Qc      
+ Qi      REL
+  96  3820.00   40.00  644.03  645.61  277.74  314.96  314.96  7.6499  0.0000  0.0000   92.28
+  95  3780.00   40.00  647.20  648.78  277.93  314.74  314.74  7.7356  0.0000  0.0000   92.48
+  94  3740.00   40.00  650.37  651.97  278.13  314.52  314.52  7.8212  0.0000  0.0000   92.68
+  93  3700.00   40.00  653.56  655.16  278.32  314.31  314.31  7.9069  0.0000  0.0000   92.87
+  92  3660.00   40.00  656.76  658.37  278.52  314.09  314.09  7.9925  0.0000  0.0000   93.05
+  91  3620.00   40.00  659.98  661.59  278.71  313.87  313.87  8.0782  0.0000  0.0000   93.23
+  90  3580.00   40.00  663.21  664.83  278.91  313.65  313.65  8.1638  0.0000  0.0000   93.40
+  89  3540.00   40.00  666.45  668.07  279.12  313.45  313.45  8.2197  0.0000  0.0000   93.11
+  88  3500.00   40.00  669.70  671.34  279.33  313.25  313.25  8.2724  0.0000  0.0000   92.76
+  87  3460.00   40.00  672.97  674.61  279.55  313.06  313.06  8.3252  0.0000  0.0000   92.42
+  86  3420.00   40.00  676.25  677.90  279.76  312.86  312.86  8.3779  0.0000  0.0000   92.08
+  85  3380.00   40.00  679.55  681.20  279.98  312.67  312.67  8.4306  0.0000  0.0000   91.74
+  84  3340.00   40.00  682.86  684.51  280.19  312.47  312.47  8.4834  0.0000  0.0000   91.40
+  83  3300.00   40.00  686.18  687.84  280.40  312.27  312.27  8.5361  0.0000  0.0000   91.07
+  82  3260.00   40.00  689.51  691.19  280.61  312.08  312.08  8.5888  0.0000  0.0000   90.73
+  81  3220.00   40.00  692.86  694.54  280.83  311.88  311.88  8.6416  0.0000  0.0000   90.40
+  80  3180.00   40.00  696.22  697.91  281.04  311.69  311.69  8.6943  0.0000  0.0000   90.06
+  79  3140.00   40.00  699.60  701.29  281.25  311.49  311.49  8.7471  0.0000  0.0000   89.73
+  78  3100.00   40.00  702.99  704.69  281.46  311.29  311.29  8.7998  0.0000  0.0000   89.40
+  77  3060.00   40.00  706.39  708.10  281.67  311.10  311.10  8.8525  0.0000  0.0000   89.07
+  76  3020.00   40.00  709.81  711.52  281.89  310.90  310.90  8.9053  0.0000  0.0000   88.74
+  75  2980.00   40.00  713.24  714.96  282.11  310.72  310.72  8.9608  0.0000  0.0000   88.37
+  74  2940.00   40.00  716.69  718.41  282.33  310.54  310.54  9.0165  0.0000  0.0000   87.99
+  73  2900.00   40.00  720.14  721.88  282.56  310.36  310.36  9.0722  0.0000  0.0000   87.61
+  72  2860.00   40.00  723.62  725.36  282.78  310.18  310.18  9.1280  0.0000  0.0000   87.23
+  71  2820.00   40.00  727.10  728.85  283.01  310.00  310.00  9.1837  0.0000  0.0000   86.86
+  70  2780.00   40.00  730.60  732.36  283.23  309.82  309.82  9.2394  0.0000  0.0000   86.49
+  69  2740.00   40.00  734.12  735.88  283.45  309.64  309.64  9.2952  0.0000  0.0000   86.12
+  68  2700.00   40.00  737.65  739.42  283.68  309.46  309.46  9.3509  0.0000  0.0000   85.75
+  67  2660.00   40.00  741.19  742.96  283.90  309.27  309.27  9.4066  0.0000  0.0000   85.38
+  66  2620.00   40.00  744.74  746.53  284.12  309.09  309.09  9.4624  0.0000  0.0000   85.01
+  65  2580.00   40.00  748.31  750.11  284.34  308.91  308.91  9.5181  0.0000  0.0000   84.65
+  64  2540.00   40.00  751.90  753.70  284.57  308.73  308.73  9.5738  0.0000  0.0000   84.29
+  63  2500.00   40.00  755.50  757.30  284.78  308.55  308.55  9.6467  0.0000  0.0000   84.10
+  62  2460.00   40.00  759.11  760.92  284.99  308.36  308.36  9.7514  0.0000  0.0000   84.22
+  61  2420.00   40.00  762.74  764.56  285.21  308.16  308.16  9.8560  0.0000  0.0000   84.33
+  60  2380.00   40.00  766.38  768.21  285.42  307.97  307.97  9.9607  0.0000  0.0000   84.43
+  59  2340.00   40.00  770.04  771.87  285.63  307.78  307.78 10.0653  0.0000  0.0000   84.53
+  58  2300.00   40.00  773.71  775.55  285.84  307.59  307.59 10.1700  0.0000  0.0000   84.63
+  57  2260.00   40.00  777.39  779.24  286.05  307.40  307.40 10.2746  0.0000  0.0000   84.72
+  56  2220.00   40.00  781.09  782.95  286.24  307.19  307.19 10.4015  0.0000  0.0000   85.07
+  55  2180.00   40.00  784.81  786.67  286.37  306.91  306.91 10.6265  0.0000  0.0000   86.61
+  54  2140.00   40.00  788.54  790.41  286.49  306.62  306.62 10.8516  0.0000  0.0000   88.15
+  53  2100.00   40.00  792.28  794.16  286.71  306.44  306.44 11.0273  0.0000  0.0000   88.72
+  52  2060.00   40.00  796.04  797.93  286.94  306.27  306.27 11.1950  0.0000  0.0000   89.12
+  51  2020.00   40.00  799.82  801.71  287.20  306.13  306.13 11.3410  0.0000  0.0000   89.19
+  50  1980.00   40.00  803.61  805.51  287.47  306.01  306.01 11.4769  0.0000  0.0000   89.10
+  49  1940.00   40.00  807.41  809.32  287.72  305.86  305.86 11.6203  0.0000  0.0000   89.16
+  48  1900.00   40.00  811.23  813.14  287.96  305.71  305.71 11.7658  0.0000  0.0000   89.25
+  47  1860.00   40.00  815.06  816.98  288.20  305.55  305.55 11.9189  0.0000  0.0000   89.42
+  46  1820.00   40.00  818.90  820.83  288.44  305.39  305.39 12.0820  0.0000  0.0000   89.70
+  45  1780.00   40.00  822.77  824.70  288.65  305.20  305.20 12.2707  0.0000  0.0000   90.29
+  44  1740.00   40.00  826.64  828.59  288.86  305.02  305.02 12.4464  0.0000  0.0000   90.71
+  43  1700.00   40.00  830.53  832.48  289.09  304.85  304.85 12.6151  0.0000  0.0000   91.04
+  42  1660.00   40.00  834.44  836.40  289.31  304.67  304.67 12.7664  0.0000  0.0000   91.24
+  41  1620.00   40.00  838.36  840.32  289.54  304.50  304.50 12.9134  0.0000  0.0000   91.36
+  40  1580.00   40.00  842.29  844.27  289.77  304.35  304.35 13.0544  0.0000  0.0000   91.39
+  39  1540.00   40.00  846.24  848.22  290.01  304.19  304.19 13.2106  0.0000  0.0000   91.49
+  38  1500.00   40.00  850.21  852.20  290.26  304.04  304.04 13.3793  0.0000  0.0000   91.64
+  37  1460.00   40.00  854.19  856.18  290.51  303.89  303.89 13.5663  0.0000  0.0000   91.87
+  36  1420.00   40.00  858.18  860.19  290.77  303.76  303.76 13.7654  0.0000  0.0000   92.11
+  35  1380.00   40.00  862.19  864.20  291.03  303.63  303.63 13.9706  0.0000  0.0000   92.36
+  34  1340.00   40.00  866.22  868.23  291.29  303.50  303.50 14.1857  0.0000  0.0000   92.66
+  33  1300.00   40.00  870.25  872.28  291.55  303.36  303.36 14.4074  0.0000  0.0000   92.99
+  32  1260.00   40.00  874.31  876.34  291.81  303.23  303.23 14.6336  0.0000  0.0000   93.34
+  31  1220.00   40.00  878.37  880.41  292.05  303.08  303.08 14.8642  0.0000  0.0000   93.76
+  30  1180.00   40.00  882.46  884.50  292.29  302.93  302.93 15.1080  0.0000  0.0000   94.30
+  29  1140.00   40.00  886.55  888.61  292.52  302.77  302.77 15.3604  0.0000  0.0000   94.92
+  28  1100.00   40.00  890.67  892.73  292.75  302.60  302.60 15.6189  0.0000  0.0000   95.62
+  27  1060.00   40.00  894.80  896.87  292.97  302.43  302.43 15.8687  0.0000  0.0000   96.22
+  26  1020.00   40.00  898.94  901.02  293.20  302.27  302.27 16.1111  0.0000  0.0000   96.73
+  25   980.00   40.00  903.10  905.18  293.43  302.11  302.11 16.3469  0.0000  0.0000   97.18
+  24   940.00   40.00  907.27  909.37  293.66  301.95  301.95 16.5743  0.0000  0.0000   97.56
+  23   900.00   40.00  911.46  913.56  293.89  301.78  301.78 16.7913  0.0000  0.0000   97.89
+  22   860.00   40.00  915.67  917.78  294.10  301.60  301.60 16.9905  0.0000  0.0000   98.22
+  21   820.00   40.00  919.89  922.01  294.31  301.42  301.42 17.1611  0.0000  0.0000   98.36
+  20   780.00   40.00  924.13  926.25  294.52  301.24  301.24 17.2958  0.0000  0.0000   98.27
+  19   740.00   40.00  928.38  930.51  294.75  301.07  301.07 17.3828  0.0000  0.0000   97.83
+  18   700.00   40.00  932.65  934.79  294.99  300.93  300.93 17.4067  0.0000  0.0000   96.92
+  17   660.00   40.00  936.93  939.08  295.26  300.81  300.81 17.3768  0.0000  0.0000   95.61
+  16   620.00   40.00  941.23  943.39  295.54  300.70  300.70 17.3218  0.0000  0.0000   94.09
+  15   580.00   40.00  945.55  947.72  295.83  300.60  300.60 17.2547  0.0000  0.0000   92.48
+  14   540.00   40.00  949.88  952.06  296.10  300.48  300.48 17.1898  0.0000  0.0000   91.00
+  13   500.00   40.00  954.23  956.41  296.34  300.33  300.33 17.1551  0.0000  0.0000   89.90
+  12   460.00   40.00  958.60  960.79  296.52  300.12  300.12 17.1784  0.0000  0.0000   89.44
+  11   420.00   40.00  962.98  965.18  296.63  299.85  299.85 17.3082  0.0000  0.0000   89.90
+  10   380.00   40.00  967.38  969.59  296.71  299.54  299.54 17.5502  0.0000  0.0000   91.13
+   9   340.00   40.00  971.80  974.02  296.79  299.23  299.23 17.8722  0.0000  0.0000   92.77
+   8   300.00   40.00  976.24  978.47  296.92  298.96  298.96 18.1776  0.0000  0.0000   94.08
+   7   260.00   40.00  980.69  982.93  297.05  298.71  298.71 18.4087  0.0000  0.0000   94.93
+   6   220.00   40.00  985.17  987.41  296.95  298.22  298.22 18.6747  0.0000  0.0000   97.38
+   5   180.00   40.00  989.66  991.92  297.13  298.02  298.02 18.7673  0.0000  0.0000   97.19
+   4   140.00   40.00  994.17  996.44  297.40  297.90  297.90 18.7985  0.0000  0.0000   96.22
+   3   100.00   40.00  998.70 1000.97  297.67  297.78  297.78 18.8233  0.0000  0.0000   95.16
+   2    60.00   40.00 1003.24 1005.52  297.93  297.66  297.66 18.8526  0.0000  0.0000   94.23
+   1    20.00   40.00 1007.80 1010.09  298.20  297.53  297.53 18.8819  0.0000  0.0000   93.31
+   k      z      dz     pres   presi   Tabs     tp     tpl      qt      Qc      
+ Qi      REL
+ Smagorinsky SGS Closure
+ Initializeing forcing data...
+ sounding data: nsnd=           3   nzsnd=          66
+ Observed sounding interval (days):  0.000000000000000E+000
+   2000.00000000000     
+ forcing data: nlsf=          16   nzlsf=          66
+ Large-Scale Forcing interval (days):  0.000000000000000E+000
+  0.624000000000000     
+ surface forcing data: nsfc=          15
+ Surface Forcing interval (days):  0.000000000000000E+000
+  0.583000000000000     
+ 
+ Case: goAMAZON
+ Caseid: loorg_2d_rad_Qfix_pH5
+ New Run.
+ Day:  0.000000000000000E+000
+ Model type: LES
+ Finish at timestep:       28800
+ Finish on day:  0.333333333333333     
+ 
+ Statistics file ouput frequency:          300  steps
+ Statistics file sampling: every           30  steps
+ printouts frequency:          60  steps
+ Adams-Bashforth scheme order:           3
+ 
+ Global Grid:         128           1          96
+ Local Grid:         128           1          96
+ Grid spacing (m) dx, dy, dz:   66.6666600000000        66.6666600000000     
+   40.0000000000000     
+ Domain dimensions (m):   8533.33248000000        66.6666600000000     
+   3820.00000000000     
+ dowallx= F
+ dowally= F
+ 
+ Timestep (sec):   1.00000000000000     
+ domain translation velocities ug, vg:  0.000000000000000E+000
+  0.000000000000000E+000
+ 
+ do column model F
+ do convective parameterization F
+ do spange damping at the domain top:  T
+ maintain grad. of scalars at the top: T
+ clouds are allowed: T
+ precipitation is allowed: T
+ smoke cloud F
+ SGS scheme is on: T
+ larger-scale subsidence is on: F
+ larger-scale tendency is on: T
+ coriolis force is allowed: T
+ vertical coriolis force is allowed: F
+ do f-plane approximation: T
+    Coriolis parameter (1/s): -7.343740497185542E-006
+    Vertical Coriolis parameter (1/s):  0.000000000000000E+000
+ longwave radiation: T
+ shortwave radiation: T
+ do seasonal solar cycle: T
+ do perpetual sun: F
+ compute effective radius for liquid: T
+ compute effective radius for ice: T
+ doradsimple =  F
+ doradhomo = F
+ dosolarconstant =  F
+ solar_constant =    685.000000000000     
+ zenith_angle =    51.7000000000000     
+ doradlon =  F
+ doradlat =  F
+ Latitude0:  -2.89420000000000     
+ Longitude0:   82.0000000000000     
+ rundatadir = ./RUNDATA
+ factor to change present CO2 concentration: nxco2=   1.00000000000000     
+ surface flux parameterization is on: T
+ Surface type: OCEAN
+  sensible heat flux prescribed: T
+  latent heat flux prescribed: T
+  surface stress prescribed: F
+ dosfchomo =  F
+ doisccp =  F
+ domodis =  F
+ domisr =  F
+ dosimfilesout= F
+ dodynamicocean = F
+ surface temperature prescribed: T
+ dossthomo = F
+ doseawater= T
+ salt_factor (satur. correction for salty water)=  0.981000000000000     
+ dotracers = F
+ output_sep = F
+ perturb_type =            1
+ doSAMconditionals = T
+ dosatupdnconditionals = F
+ doscamiopdata = F
+ iopfile:
+ dozero_out_day0 = F
+ nsave2D =         3600
+ nsave2Dstart =            0
+ nsave2Dend =     99997200
+ save2Dbin =  T
+ nsave3D =         1800
+ nsave3Dstart =            0
+ nsave3Dend =    999999999
+ save3Dbin =  T
+ qnsave3D =   0.000000000000000E+000
+ docolumn =  F
+ doensemble =  F
+ nensemble =            0
+ nstatmom =         1000
+ nstatmomstart =            1
+ nstatmomend =            0
+ savemombin =  F
+ nmovie =         1000
+ nmoviestart =     99999999
+ nmovieend =     99999999
+ Appending 3D data. file:./OUT_3D/goAMAZON_loorg_2d_rad_Qfix_pH5_1.bin2D        
+                                                                  
+ Added          278  arrays to statistics for M2005 microphysics
+ Added           85  arrays to statistics for gas and aqueous chemical species
+ Number of statistics profiles:         686
+ Statistics profiles to save:
+PRES       U          V          UOBS       VOBS       WOBS       RHO        MSE     
+DSE        SSE        THETAE     THETA      THETAV     THETAL     TABS       TABSOBS 
+TL         QT         QV         QVOBS      TTEND      QTEND      QCL        QCI     
+QPL        QPI        QN         QP         QNFR       FRACT      QSAT       QCOND   
+PRECIP     RELH       TLFLUX     TLFLUXS    TVFLUX     QCFLUX     QIFLUX     SW      
+SWSB       UW         UWSB       VW         VWSB       RADLWUP    RADLWDN    RADSWUP 
+RADSWDN    RADQRLW    RADQRSW    RADQR      RADQRS     RADQRC     Q1C        Q1CC    
+Q1CS       Q1LS       Q2         Q2C        Q2S        Q2LS       U2         V2      
+W2         TL2        TQ         QT2        QC2        QI2        QS2        S2      
+W3         AUP        WSKEW      TKE        TKES       TK         TKH        HLADV   
+HLDIFF     HLLAT      HLRAD      QTADV      QTDIFF     QTSINK     QTSRC      QPADV   
+QPDIFF     QPFALL     QPSRC      QPEVP      SHEAR      SHEARS     BUOYA      BUOYAS  
+ADVTR      PRESSTR    ADVTRS     DIFTR      DISSIP     DISSIPS    WUADV      WVADV   
+WUPRES     WVPRES     WUANIZ     WVANIZ     WUSHEAR    WVSHEAR    WUBUOY     WVBUOY  
+WUDIFF     WVDIFF     W2ADV      W2PRES     W2REDIS    W2BUOY     W2DIFF     TWGRAD  
+TWADV      TWDIFF     TWBUOY     TWPRES     TWPREC     QWGRAD     QWADV      QWDIFF  
+QWBUOY     QWPRES     QWPREC     T2ADVTR    T2GRAD     T2DISSIP   T2DIFTR    T2PREC  
+Q2ADVTR    Q2GRAD     Q2DISSIP   Q2DIFTR    Q2PREC     HYDRO      MCUP       MCDNS   
+MCDNU      MC         CORE       CORECL     COREDN     COREDNCL   MCRUP      MCRDNS  
+MCRDNU     MCR        QVTEND     QHTEND     QNUDGE     THTEND     TVTEND     TNUDGE  
+WSTAR3     UADV       VADV       UDIFF      VDIFF      UNUDGE     VNUDGE     ULSADVV 
+VLSADVV    USTOR      VSTOR      UTENDCOR   URESID     VTENDCOR   VRESID     HLSTOR  
+QTSTOR     CLDCUMU1   CLDCUMD1   CLDCUMU2   CLDCUMD2   TBIAS      QBIAS      RELHBIAS
+UXGRID     VXGRID     UGEOSTR    VGEOSTR    TKEDAMP    RADQRCLW   RADQRCSW   CLD     
+WCLD       UCLD       VCLD       MSECLD     DSECLD     TLCLD      TACLD      TVCLD   
+TVCLDA     QTCLD      QNCLD      QPCLD      SCLD       WCLDA      TLWCLD     TVWCLD  
+SWCLD      QTWCLD     QCWCLD     QIWCLD     HFCLD      HFCLDA     UCLDA      VCLDA   
+UPGFCLD    VPGFCLD    WPGFCLD    UWCLD      VWCLD      UWSBCLD    VWSBCLD    MFCLD   
+MFHCLD     MFHCLDA    MFTLCLD    MFTLCLDA   MFTVCLD    MFTVCLDA   MFQTCLD    MFQTCLDA
+RUWCLD     RVWCLD     RWWCLD     COR        WCOR       UCOR       VCOR       MSECOR  
+DSECOR     TLCOR      TACOR      TVCOR      TVCORA     QTCOR      QNCOR      QPCOR   
+SCOR       WCORA      TLWCOR     TVWCOR     SWCOR      QTWCOR     QCWCOR     QIWCOR  
+HFCOR      HFCORA     UCORA      VCORA      UPGFCOR    VPGFCOR    WPGFCOR    UWCOR   
+VWCOR      UWSBCOR    VWSBCOR    MFCOR      MFHCOR     MFHCORA    MFTLCOR    MFTLCORA
+MFTVCOR    MFTVCORA   MFQTCOR    MFQTCORA   RUWCOR     RVWCOR     RWWCOR     CDN     
+WCDN       UCDN       VCDN       MSECDN     DSECDN     TLCDN      TACDN      TVCDN   
+TVCDNA     QTCDN      QNCDN      QPCDN      SCDN       WCDNA      TLWCDN     TVWCDN  
+SWCDN      QTWCDN     QCWCDN     QIWCDN     HFCDN      HFCDNA     UCDNA      VCDNA   
+UPGFCDN    VPGFCDN    WPGFCDN    UWCDN      VWCDN      UWSBCDN    VWSBCDN    MFCDN   
+MFHCDN     MFHCDNA    MFTLCDN    MFTLCDNA   MFTVCDN    MFTVCDNA   MFQTCDN    MFQTCDNA
+RUWCDN     RVWCDN     RWWCDN     QTFLUX     QV2        QVADV      QVDIFF     QVLSADV 
+QVMPHY     QVSED      QVCHEM     QVCOAG     QVSCAV     QVSTRG     QVFLXR     QVFLXS  
+QVSDFLX    QC         QCADV      QCDIFF     QCLSADV    QCMPHY     QCSED      QCCHEM  
+QCCOAG     QCSCAV     QCSTRG     QCFLXR     QCFLXS     QCSDFLX    QCFRAC     TAUQC   
+QCOEFFR    NC         NCADV      NCDIFF     NCLSADV    NCMPHY     NCSED      NCCHEM  
+NCCOAG     NCSCAV     NCSTRG     NCFLXR     NCFLXS     NCSDFLX    QAC        QACADV  
+QACDIFF    QACLSADV   QACMPHY    QACSED     QACCHEM    QACCOAG    QACSCAV    QACSTRG 
+QACFLXR    QACFLXS    QACSDFLX   QAK        QAKADV     QAKDIFF    QAKLSADV   QAKMPHY 
+QAKSED     QAKCHEM    QAKCOAG    QAKSCAV    QAKSTRG    QAKFLXR    QAKFLXS    QAKSDFLX
+NAC        NACADV     NACDIFF    NACLSADV   NACMPHY    NACSED     NACCHEM    NACCOAG 
+NACSCAV    NACSTRG    NACFLXR    NACFLXS    NACSDFLX   NAK        NAKADV     NAKDIFF 
+NAKLSADV   NAKMPHY    NAKSED     NAKCHEM    NAKCOAG    NAKSCAV    NAKSTRG    NAKFLXR 
+NAKFLXS    NAKSDFLX   QAw        QAwADV     QAwDIFF    QAwLSADV   QAwMPHY    QAwSED  
+QAwCHEM    QAwCOAG    QAwSCAV    QAwSTRG    QAwFLXR    QAwFLXS    QAwSDFLX   DMS     
+DMSADV     DMSDIFF    DMSLSADV   DMSMPHY    DMSSED     DMSCHEM    DMSCOAG    DMSSCAV 
+DMSSTRG    DMSFLXR    DMSFLXS    DMSSDFLX   SO2        SO2ADV     SO2DIFF    SO2LSADV
+SO2MPHY    SO2SED     SO2CHEM    SO2COAG    SO2SCAV    SO2STRG    SO2FLXR    SO2FLXS 
+SO2SDFLX   SO4        SO4ADV     SO4DIFF    SO4LSADV   SO4MPHY    SO4SED     SO4CHEM 
+SO4COAG    SO4SCAV    SO4STRG    SO4FLXR    SO4FLXS    SO4SDFLX   QR         QRADV   
+QRDIFF     QRLSADV    QRMPHY     QRSED      QRCHEM     QRCOAG     QRSCAV     QRSTRG  
+QRFLXR     QRFLXS     QRSDFLX    QRFRAC     TAUQR      QROEFFR    NR         NRADV   
+NRDIFF     NRLSADV    NRMPHY     NRSED      NRCHEM     NRCOAG     NRSCAV     NRSTRG  
+NRFLXR     NRFLXS     NRSDFLX    QAr        QArADV     QArDIFF    QArLSADV   QArMPHY 
+QArSED     QArCHEM    QArCOAG    QArSCAV    QArSTRG    QArFLXR    QArFLXS    QArSDFLX
+QLAT       QLATCLD    QLATCOR    QLATCDN    QVCLD      QCCLD      NCCLD      QACCLD  
+QAKCLD     NACCLD     NAKCLD     QAwCLD     DMSCLD     SO2CLD     SO4CLD     QRCLD   
+NRCLD      QArCLD     QVCOR      QCCOR      NCCOR      QACCOR     QAKCOR     NACCOR  
+NAKCOR     QAwCOR     DMSCOR     SO2COR     SO4COR     QRCOR      NRCOR      QArCOR  
+QVCDN      QCCDN      NCCDN      QACCDN     QAKCDN     NACCDN     NAKCDN     QAwCDN  
+DMSCDN     SO2CDN     SO4CDN     QRCDN      NRCDN      QArCDN     PCC        PCCN    
+NSUBC      PRE        NSUBR      PRA        NPRA       PRC        NPRC       NPRC1   
+NRAGG      NARG1      NARG2      NACTRATE   QACTRATE   NACTDIFF   NATRANS    QATRANS 
+ISACT      DC1        DC2        DG1ACT     DG2ACT     SSPK       DG1        DG2     
+QAPRA      QAPRC      QAPRE      QASUBC     NCPOSLM    NCNEGLM    NRPOSLM    NRNEGLM 
+NADPOSLM   NADNEGLM   QVPOSLM    QCNEGLM    QRNEGLM    QAWNEGLM   QARNEGLM   NSUBI   
+NSUBS      PAN        PAN+       Isopr      Isopr+     IP1O2      IP1O2+     IP1Nit  
+IP1Nit+    IP1NtO2    IP1NtO2+   IPDiNt     IPDiNt+    IPOOH      IPOOH+     IEPOX   
+IEPOX+     IP2O2      IP2O2+     IPTHHP     IPTHHP+    IPDHDHP    IPDHDHP+   IPDHNt  
+IPDHNt+    DHHPPX     DHHPPX+    C4CBY      C4CBY+     C4CBYO2    C4CBYO2+   C4CBYNt 
+C4CBYNt+   HCHO       HCHO+      CO         CO+        IP1OH      IP1OH+     IP1NtHP 
+IP1NtHP+   IPTHNt     IPTHNt+    OH         NO         NO2        RO2        HO2     
+TETROLa    TETROLa+   IPXNO3a    IPXNO3a+   IPXSO4a    IPXSO4a+   IEPOXa     IEPOXa+ 
+IP1NITa    IP1NITa+   TRIOLa     TRIOLa+    HNO3a      HNO3a+     IPDiNta    IPDiNta+
+TETROLg    TETROLg+   IPXNO3g    IPXNO3g+   IPXSO4g    IPXSO4g+   IEPOXg     IEPOXg+ 
+IP1NITg    IP1NITg+   TRIOLg     TRIOLg+    HNO3g      HNO3g+     IPDiNtg    IPDiNtg+
+TETROLr    TETROLr+   IPXSO4r    IPXSO4r+   IPOOHd+    IEPOXd+ 
+forrtl: File exists
+forrtl: severe (10): cannot overwrite existing file, unit 55, file /home/disk/hermes3/jyyoon/sam_james/./OUT_STAT/goAMAZON_loorg_2d_rad_Qfix_pH5.stat
+Image              PC                Routine            Line        Source             
+SAM_ADV_SELPPM_SG  0000000000604449  Unknown               Unknown  Unknown
+SAM_ADV_SELPPM_SG  0000000000620C43  Unknown               Unknown  Unknown
+SAM_ADV_SELPPM_SG  000000000044EAF2  hbuf_init                 261  hbuffer.f90
+SAM_ADV_SELPPM_SG  00000000004653C7  crm                       103  main.f90
+SAM_ADV_SELPPM_SG  000000000040CD22  Unknown               Unknown  Unknown
+libc.so.6          000014DAE504624A  Unknown               Unknown  Unknown
+libc.so.6          000014DAE5046305  __libc_start_main     Unknown  Unknown
+SAM_ADV_SELPPM_SG  000000000040CC21  Unknown               Unknown  Unknown

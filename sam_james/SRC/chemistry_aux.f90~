@@ -1,0 +1,55 @@
+module chemistry_aux
+! auxiliary functions for chemistry 
+  
+   implicit none
+
+   real :: pi=3.1415927
+
+   real :: tsunrise = 10.     ! hour UTC hardcoded for March 15
+   real :: tzenith  = 15.     ! hour UTC hardcoded for March 15 
+   real :: OH_night = 1.e5  ! molecules/cm3
+   real :: OH_day_peak = 5.e6
+
+   real :: NO2_photolysis_night = 0  ! /s
+   real :: NO2_photolysis_peak =  0.01 !  /s
+ CONTAINS
+
+   function get_OH(t)
+     ! get OH concentration in molecules/cm3 as a function of hour
+     return(truncated_cos(t, tsunrise, tzenith, OH_night, OH_day_peak))
+
+   end function get_OH
+   
+   function get_NO2_photolysis_rate(t):
+     !  get NO2 photolysis rate constant as a function of hour  
+       return(truncated_cos(t, tsunrise, tzenith, &
+            NO2_photolysis_night, NO2_photolysis_peak)
+
+   end function get_NO2_photolysis_rate    
+   
+   function truncated_cos(t, tsunrise, tzenith, Vnight, Vpeak)
+
+     ! compute truncated cosine curve based on time of day
+     !  tsunrise is time of sunrise in hours
+     !  tzenith is time of local noon in hours
+     !  V night is the desired value whenever sun is down     
+     !  V peak  is the desired value at local noon     
+     
+     real :: t, tsunrise, tzenith, Vnight, Vpeak
+         
+     tsunrise = tsunrise * pi/12.
+     tzenith = tzenith * pi/12
+
+     A = (Vnight - Vpeak)/(cos(tsunrise-tzenith) - 1)
+     V = MAX(A * cos(t*pi/12. - tzenith) + Vpeak - A, Vnight)     
+
+     return(V)
+
+
+   end function truncated_cos  
+   
+   
+
+
+   
+end module chemistry_aux

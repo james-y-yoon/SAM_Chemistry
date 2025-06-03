@@ -1,0 +1,92 @@
+MODULE chem_isoprene_rate_functions
+  USE chem_isoprene_Parameters, only: NREACT
+  IMPLICIT NONE
+  
+CONTAINS
+
+subroutine compute_rate_constants(nzm, TempK, M, rate_const)
+
+  integer, intent(in) :: nzm
+  real, intent(in) :: TempK(nzm), M(nzm)   ! temperature and air molecules/cm3 profiles
+  real, intent(inout) :: rate_const(nzm, NREACT)
+
+  rate_const(:,1) = k_T(2.10e-11, 465., TempK)
+  rate_const(:,2) = KRO2HO2(TempK)
+  rate_const(:,3) = KRO2NO(TempK)
+  rate_const(:,7) = k_T(3.3e12,-8660.,TempK)
+  rate_const(:,8) = KRO2HO2(TempK)
+  rate_const(:,9) = KRO2NO(TempK)
+  rate_const(:,12) = KRO2HO2(TempK)
+  rate_const(:,13) = KRO2NO(Tempk)
+  rate_const(:,17) = k_T(8.e-12,380.,TempK)
+  rate_const(:,18) = KFPAN(M, TempK)
+  rate_const(:,19) = KBPAN(M, TempK)
+  rate_const(:,20) = KRO2NO(TempK)
+  rate_const(:,22) = k_T(1.05E-11,465.,TempK)
+  rate_const(:,23) = k_T(2.6E-12,610.,TempK)
+  rate_const(:,24) = k_T(1.05e-11,465.,TempK)
+  rate_const(:,25) = k_T(1.05e-11,465.,TempK)
+   
+  
+end subroutine compute_rate_constants
+
+  
+
+ELEMENTAL REAL FUNCTION KRO2HO2(T)
+! T in K
+!    use isoprene_k_T
+    REAL, intent(IN) :: T
+    REAL :: C1, C2
+    C1 = 1.4e-13
+    C2 = 1330.
+    KRO2HO2 = k_T(C1, C2, T)
+END FUNCTION KRO2HO2
+
+ELEMENTAL REAL FUNCTION KRO2NO(T)
+    REAL, intent(IN) :: T
+    REAL :: C1, C2
+    C1 = 2.7e-12
+    C2 = 360.
+    KRO2NO = k_T(C1, C2, T)
+END FUNCTION KRO2NO 
+
+
+ELEMENTAL REAL FUNCTION k_T(C1, C2, T)
+! T in Kelvin
+    REAL, intent(IN) :: C1, C2, T
+    k_T =  C1 * EXP(C2/T)
+END FUNCTION k_T
+
+ELEMENTAL REAL FUNCTION KFPAN(M, T)
+! M in air molecules/cm3
+! T in Kelvin
+    REAL, intent(IN) :: M, T
+    REAL :: KC0, KC1, KRC, FCC, NC, FC
+    KC0 = 3.28e-28 * M * (T/300)**(-6.87)
+    KC1 = 1.25e-11 * (T/300)**(1.105)
+    KRC = KC0/KC1
+    FCC = 0.30
+    NC = 0.75 - 1.27*LOG10(FCC)
+    FC = 10**(LOG10(FCC)/(1 + (LOG10(KRC)/NC)**2))
+    KFPAN = (KC0 * KC1) * FC/(KC0 + KC1)
+
+END FUNCTION KFPAN
+
+
+
+ELEMENTAL REAL FUNCTION KBPAN(M, T)
+! M in air molecules/cm3
+! T in Kelvin
+    REAL, intent(IN) :: M, T
+    REAL :: KD0, KD1, KRD, FCD, NCD, FD
+    KD0 = 1.10e-5*M*EXP(-10100/T)
+    KD1 = 1.90e17*EXP(-14100/T)
+    KRD = KD0/KD1
+    FCD = 0.30
+    NCD = 0.75 - 1.27*LOG10(FCD)
+    FD = 10**(LOG10(FCD)/(1 + (LOG10(KRD)/NCD)**2))
+    KBPAN = (KD0 * KD1) * FD/(KD0 + KD1)
+END FUNCTION KBPAN
+
+
+END MODULE chem_isoprene_rate_functions

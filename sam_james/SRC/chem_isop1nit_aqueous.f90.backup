@@ -1,0 +1,120 @@
+module chem_isop1nit_aqueous
+
+  implicit none  
+
+  ! Aqueous chemistry variables, one aqueous and one gas for each species
+  integer, parameter :: naqchem_fields = 3
+  integer :: iIP1NIT = 1
+  integer :: iTRIOL = 2
+  integer :: iHNO3 = 3
+    
+
+  ! NEED to get actual weights here (TRIOL here was C3H8O3 (glycerol), NEED ISOP1NIT
+  real,  parameter, dimension(naqchem_fields) :: molwt = (/ &
+      100.00, 92.094, 63.01/) ! g/mol corresponding to above species  
+  
+  logical, dimension(naqchem_fields), public :: flag_aqchemvar_out3D  ! which aqueous chem array to  output
+
+  logical, dimension(naqchem_fields), public :: flag_aqchemgasvar_out3D  ! which aqueous chem product array to output
+
+   character(LEN=7), parameter, dimension(naqchem_fields) :: aq_species_names = (/ &
+        'IP1NITa', 'TRIOLa ', 'iHNO3a  ' /)
+   character(LEN=7), parameter, dimension(naqchem_fields) :: aq_gasprod_species_names = (/ &
+        'IP1NITg', 'TRIOLg ', 'iHNO3g  ' /)   
+   
+  contains 
+
+ 
+subroutine isop1nit_aqueous_tendencies(nzm, T, p, Rp, gas_input, aq_input, gas_tend, aq_tend, print_debug_output)
+
+  implicit none
+  
+  integer, intent(in) :: nzm   ! number of vertical grid levels  
+  real, dimension(1:nzm), intent(in) :: T   !  K 
+  real, dimension(1:nzm), intent(in) :: p   ! atm
+  real, dimension(1:nzm), intent(in) :: Rp  ! droplet radius (m)
+  real, dimension(1:nzm), intent(in) :: Wl  ! liquid water content vol H2O/vol air
+
+  real, dimension(1:nzm, 1:naqchem_fields), intent(in) :: gas_input, aq_input
+  real, dimension(1:nzm, 1:naqchem_fields), intent(out) :: gas_tend, aq_tend  
+
+  logical, intent(in) :: print_debug_output
+  logical :: add_text 
+  
+  real, dimension(1:nzm) :: IP1NITg, IP1NITaq
+  real, dimension(1:nzm) :: TRIOLg, TRIOLaq
+  real, dimension(1:nzm) :: HNO3g, HNO3aq
+  
+  integer :: k
+
+  ! constants
+  real :: R = 0.082057 !L*atm/k*mol
+  real :: Dg = 1e-5  !  m^2/s - diffusitivity of IEPOX in air (0.1 cm^2/s)
+  real :: ah = 0.25 !value is from eddingsaas - H/55.5 #no units - mol/L of H3O+/55.5 mol/L water - mol fraction of H+ in water - activity 
+  real :: a = 1 !no unit - molec enering liquid/molec collisions with surface 
+
+  real :: Daq = 1e-9 !m^2/s - diffusion of A in water 
+  real :: Ha = 1.7e8  ! M/atm - henry's law constant - value from gaston 
+
+  real :: Htet = 1e8 !M/atm tetrol estimate 
+  real :: Hs = 1e16 !M/atm sulfate product estimate 
+  real :: Hn = 1e7 !M/atm nitrate product estimate 
+  
+  real, dimension(1:nzm) :: kaq  ! s-1 full rate constant
+  real, dimension(1:nzm) :: qq   ! m/(1/s/m^2/s)**0.5 = no units
+  real, dimension(1:nzm) :: Q   ! no units
+  real, dimension(1:nzm) :: w  ! m/s   mean speed
+  real, dimension(1:nzm) :: Kmt  ! s-1 mass transfer coefficient
+
+
+  kaq = (kh*H) + (kno3*NO3*ah) + (kso4*SO4*ah) + (khso4*HSO4) ! full rate constant
+     ! add epps to avoid divide by zero????
+  faqH = (kh*H)/kaq
+  faqNO3 = (kno3*NO3*ah)/kaq
+  faqSO4 = ((kso4*SO4*ah) + (khso4*HSO4))/kaq
+  qq = Rp*((kaq/Daq)**0.5)
+  Q = 3.0*(((1.0/tanh(qq))/qq)-(1.0/(qq**2)))
+  w = ((8*R*T)/(3.1415*Ma))**0.5 ! m/s book equ for mean speed
+  Kmt = ((Rp**2/(3*Dg)) + (4*Rp/(3*w*a))) **(-1) ! s-1 mass transfer coefficient
+
+  IEPOXg = gas_input(:, iIEPOX)
+  IEPOXaq = aq_input(:, iIEPOX)
+  TETROLg = gas_input(:, iTETROL)
+  TETROLaq = aq_input(:, iTETROL)
+  IEPOX_NO3g = gas_input(:, iIEPOX_NO3)
+  IEPOX_NO3aq = aq_input(:, iIEPOX_NO3)
+  IEPOX_SO4g = gas_input(:, iIEPOX_SO4)
+  IEPOX_SO4aq = aq_input(:, iIEPOX_SO4)
+  
+  
+  !   ODE terms
+
+  gas_tend(:, iIEPOX) = -(Kmt*Wl*IEPOXg) + ((1/Ha)*Kmt*IEPOXaq*Wl)
+  aq_tend(:, iIEPOX) = ((Kmt*IEPOXg)/(R*T))-((Kmt*IEPOXaq)/(Ha*R*T))-(Q*kaq*IEPOXaq)
+  gas_tend(:, iTETROL) = ((Kmt*TETROLaq*Wl)/Htet)-(Kmt*TETROLg*Wl)
+  aq_tend(:, iTETROL) = (faqH*Q*kaq*IEPOXaq)-(Kmt*TETROLaq/(R*T*Htet))+(Kmt*TETROLg/(R*T))
+  gas_tend(:, iIEPOX_NO3) = ((Kmt*IEPOX_NO3aq*Wl)/Hn)-(Kmt*IEPOX_NO3g*Wl)
+  aq_tend(:, iIEPOX_NO3) = (faqNO3*Q*kaq*IEPOXaq)-(Kmt*IEPOX_NO3aq/(R*T*Hn))+(Kmt*IEPOX_NO3g/(R*T))
+  gas_tend(:, iIEPOX_SO4) =  ((Kmt*IEPOX_SO4aq*Wl)/Hs)-(Kmt*IEPOX_SO4g*Wl)
+  aq_tend(:, iIEPOX_SO4) = (faqSO4*Q*kaq*IEPOXaq)-(Kmt*IEPOX_SO4aq/(R*T*Hs))+(Kmt*IEPOX_SO4g/(R*T))
+
+!  if (print_debug_output) then
+!     add_text=.true.
+!     do k = 1,nzm
+        
+!        if (Wl(k).gt.1.e-10) then
+!           if (add_text) then
+!              write (*,*) 'k, Wl, IEPOXg, IEPOXg+, IEPOXa, IEPOXa+, TETROLg, TETROLg+, TETROLa, TETROLa+'
+!              add_text = .false.
+!           end if   
+              
+!              write(*,*) k, Wl(k), gas_input(k,iIEPOX), gas_tend(k,iIEPOX), aq_input(k,iIEPOX), aq_tend(k,iIEPOX) !
+!           !  gas_input(k,iTETROL), aq_input(k,iTETROL), gas_tend(k,iTETROL), aq_tend(k,iTETROL)
+!        end if
+!     end do   
+!  end if              
+
+  
+end subroutine isop1nit_aqueous_tendencies
+
+end module chem_isop1nit_aqueous

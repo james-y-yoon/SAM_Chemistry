@@ -1,0 +1,27 @@
+module chem_isop1nit_aqueous
+
+  implicit none  
+
+  ! Aqueous chemistry variables, one aqueous and one gas for each species
+  integer, parameter :: naqchem_fields = 3
+
+
+  ! NEED to get actual weights here (TRIOL here was C3H8O3 (glycerol), NEED ISOP1NIT
+  real,  parameter, dimension(naqchem_fields) :: molwt = (/ &
+     /) ! g/mol corresponding to above species  
+  
+  logical, dimension(naqchem_fields), public :: flag_aqchemvar_out3D  ! which aqueous chem array to  output
+
+  logical, dimension(naqchem_fields), public :: flag_aqchemgasvar_out3D  ! which aqueous chem product array to output
+
+   character(LEN=7), parameter, dimension(naqchem_fields) :: aq_species_names = (/ &
+        /)
+   character(LEN=7), parameter, dimension(naqchem_fields) :: aq_gasprod_species_names = (/ &
+        'IP1NITg', 'TRIOLg ', 'iHNO3g  ' /)   
+   
+  contains 
+
+ 
+
+
+end module chem_isop1nit_aqueous

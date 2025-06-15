@@ -1,0 +1,40 @@
+Procid = 0
+Wallclock timer cost est.:        0 usec per start/stop pair
+CPU accumulation interval is 0.01 seconds
+
+Stats for thread 0:
+Name               Called       Wallclock    Percent of total  
+          total            1   1730.017          100.000
+       initialize          1      0.064            0.004
+     boundaries       149761      9.368            0.541
+           kurant      28800      2.941            0.170
+             zero      28800      0.524            0.030
+         buoyancy      28800      2.849            0.165
+          forcing      28800     10.160            0.587
+          nudging      28800      0.011            0.001
+          damping      28800      0.313            0.018
+          surface      28800      0.043            0.002
+         tke_full      28800     13.674            0.790
+       advect_mom      28800      4.147            0.240
+      diffuse_mom      28800      4.734            0.274
+         pressure      28800     13.660            0.790
+        adams_uvw      57600      3.001            0.173
+   advect_scalars    1612800    759.852           43.922
+  diffuse_scalars    1094400     65.336            3.777
+       upperbound      28800      0.025            0.001
+       micro_proc      28800    256.827           14.845
+          chemistry    28800      0.002            0.000
+        radiation      28800    315.800           18.254
+       radiation-lw      960     72.592            4.196
+         diagnose      28800      5.671            0.328
+           2D_out      28800      0.078            0.004
+           3D_out      28800      0.117            0.007
+        print_out      28800      0.639            0.037
+       statistics       2880     12.764            0.738
+  micro_statistic       2880     10.774            0.623
+   sgs_statistics       2880      0.278            0.016
+         stat_out         96      2.241            0.130
+       radiation-sw      905    238.451           13.783
+      restart_out          1      0.039            0.002
+
+TIMER OVERHEAD (wallclock seconds) =     1.221657

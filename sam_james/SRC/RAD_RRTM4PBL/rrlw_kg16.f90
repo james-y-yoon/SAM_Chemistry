@@ -1,1 +1,0 @@
-../RAD_RRTM/rrlw_kg16.f90

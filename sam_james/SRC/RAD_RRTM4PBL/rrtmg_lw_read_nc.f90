@@ -1,1 +1,0 @@
-../RAD_RRTM/rrtmg_lw_read_nc.f90

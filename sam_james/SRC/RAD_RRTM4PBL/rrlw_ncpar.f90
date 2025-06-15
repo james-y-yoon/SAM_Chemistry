@@ -1,1 +1,0 @@
-../RAD_RRTM/rrlw_ncpar.f90

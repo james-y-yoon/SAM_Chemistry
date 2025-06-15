@@ -1,1 +1,0 @@
-../RAD_RRTM/rrsw_tbl.f90

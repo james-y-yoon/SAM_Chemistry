@@ -1,0 +1,45 @@
+Procid = 0
+Wallclock timer cost est.:        0 usec per start/stop pair
+CPU accumulation interval is 0.01 seconds
+
+Stats for thread 0:
+Name               Called       Wallclock    Percent of total  
+          total            1   6766.929          100.000
+       initialize          1      1.140            0.017
+     boundaries      1778401   2088.323           30.861
+           kurant     342000     30.358            0.449
+             zero     342000      1.151            0.017
+         buoyancy     342000      2.291            0.034
+          forcing     342000     58.117            0.859
+          nudging     342000      0.639            0.009
+          damping     342000      1.644            0.024
+          surface     342000      0.439            0.006
+         tke_full     342000     15.842            0.234
+       advect_mom     342000      3.894            0.058
+      diffuse_mom     342000      3.827            0.057
+         pressure     342000    493.930            7.299
+        adams_uvw     684000      3.307            0.049
+   advect_scalars   24966000   1649.969           24.383
+  diffuse_scalars   18810000    123.631            1.827
+       upperbound     342000      0.135            0.002
+       micro_proc     342000    480.382            7.099
+          chemistry   342000      0.115            0.002
+        radiation     342000     89.381            1.321
+       radiation-lw    11400     33.469            0.495
+         diagnose     342000    170.155            2.515
+           2D_out     342000      7.103            0.105
+           3D_out     342000     13.516            0.200
+        print_out     342000     43.190            0.638
+       statistics      34200    100.720            1.488
+  micro_statistic      34200    115.404            1.705
+   sgs_statistics      34200      9.855            0.146
+    micro_quickbeam     6840      0.667            0.010
+         stat_out       1140    373.602            5.521
+       radiation-sw     5820     46.292            0.684
+      restart_out          2      2.154            0.032
+
+TIMER OVERHEAD (wallclock seconds) =    13.835711
+
+Same stats sorted by timer with thread number appended:
+Name               Called       Wallclock    Percent of total  
+OVERHEAD.0   (wallclock seconds) =    13.835711

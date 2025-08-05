@@ -1,0 +1,10 @@
+#!/bin/csh
+#SBATCH --ntasks=128
+#SBATCH --nodes=4
+#SBATCH --partition=HERMES
+
+setenv LD_LIBRARY_PATH  /usr/local/lib/netcdf-ifx:${LD_LIBRARY_PATH}
+mpirun -np 128 SAM_ADV_SELPPM_SGS_TKE_RAD_RRTM4PBL_MICRO_M2005_MA | tee sam.log
+
+# Exit normally
+exit 0

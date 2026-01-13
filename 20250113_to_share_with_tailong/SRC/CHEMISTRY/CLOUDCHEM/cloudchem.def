@@ -1,0 +1,134 @@
+#include cloudchem.spc
+#include cloudchem.eqn
+
+#INLINE F90_GLOBAL
+  ! global variables used by special rate constants of this mechanism
+
+  ! air/water concentration (molecules/cm3)
+  REAL(KIND=dp)      :: c_m, c_h2o
+#ENDINLINE
+
+#INLINE F90_RATES
+
+REAL(KIND=dp) FUNCTION K1(C_M, T)
+  REAL(KIND=dp), intent(IN) :: C_M, T
+  REAL(KIND=dp) :: K80, K8I, KR8, FC8, NC8, F8
+
+    K80 = 3.2e-30 * C_M * (T / 300)**(-4.5)
+    K8I = 3.0e-11
+    
+    KR8 = K80/K8I
+    FC8 = 0.41
+    NC8 = 0.75 - 1.27 * (log10(FC8))
+    F8 = 10**(log10(FC8) / (1 + (log10(KR8) / NC8)**2))
+    
+    K1 = (K80 * K8I) * F8 / (K80 + K8I)
+ 
+ END FUNCTION K1
+
+ ELEMENTAL REAL FUNCTION KMT11(M, T)
+
+      REAL, intent(IN) :: M, T
+      REAL :: K1, K3, K4, K2
+
+      K1 = 2.40e-14 * exp(460./T)
+      K3 = 6.50e-34 * exp(1335./T)
+      K4 = 2.70e-17 * exp(2199./T)
+      
+      K2 = (K3 * M)/(1+ (K3 * M / K4))
+      KMT11 = K1 + K2
+  END FUNCTION KMT11
+  
+  ELEMENTAL REAL FUNCTION KMT09(M, T)
+      REAL, intent(IN) :: M, T
+      REAL :: K90, K9I, KR9, FC9, NC9, F9
+
+      FC9 = 0.4
+      K90 = 1.4e-31 * M * (T/300.)**(-3.1)
+      K9I = 4.0e-12
+      KR9 = K90 / K9I
+      
+      NC9 = 0.75 - 1.27 * (log10(FC9))
+      F9 = 10**( log10(FC9) / (1+(log10(KR9)/NC9)**2) )
+      KMT09 = (K90 * K9I) * F9 / (K90 + K9I)
+  END FUNCTION KMT09
+  
+  ELEMENTAL REAL FUNCTION K2(M, T, C_H2O)
+
+      REAL, intent(IN) :: M, T, C_H2O
+      REAL :: unit_f, H2O, f0, k1, k2_i
+      
+      f0 = 1 + 1.4e-21 * C_H2O * exp(2200./T)
+      
+      k1 = 2.2e-13 * exp(600./T) * f0
+      k2_i = 1.9e-33 * exp(980./T) * M * f0
+      K2 = k1 + k2_i
+  END FUNCTION K2
+  
+  ELEMENTAL REAL FUNCTION KMT05(M)
+      ! M in air molecules/cm3
+      REAL, intent(IN) :: M
+
+      KMT05 = 1.44e-13 * (1 + M / 4.2e19)
+  END FUNCTION KMT05
+
+  ELEMENTAL REAL FUNCTION KFPAN(M, T)
+     ! M in air molecules/cm3
+    ! T in Kelvin
+      REAL, intent(IN) :: M, T
+      REAL :: KC0, KC1, KRC, FCC, NC, FC
+      
+      FCC = 0.30
+
+      KC0 = 3.28e-28 * M * (T/300)**(-6.87)
+      KC1 = 1.125e-11 * (T/300)**(-1.105)
+      KRC = KC0/KC1
+      
+      NC = 0.75 - 1.27*LOG10(FCC)
+      FC = 10**(LOG10(FCC)/(1 + (LOG10(KRC)/NC)**2))
+      
+      KFPAN = (KC0 * KC1) * FC / (KC0 + KC1)
+  END FUNCTION KFPAN
+
+  ELEMENTAL REAL FUNCTION KBPAN(M, T)
+  
+      REAL, intent(IN) :: M, T
+      REAL :: KD0, KD1, KRD, FCD, NCD, FD
+      
+      FCD = 0.30
+
+      KD0 = 1.10e-5 * M * EXP(-10100/T)
+      KD1 = 1.90e17 * EXP(-14100/T)
+      KRD = KD0/KD1
+      
+      NCD = 0.75 - 1.27*LOG10(FCD)
+      FD = 10**(LOG10(FCD)/(1 + (LOG10(KRD)/NCD)**2))
+      KBPAN = (KD0 * KD1) * FD/(KD0 + KD1)
+  END FUNCTION KBPAN
+  
+  ELEMENTAL REAL FUNCTION KMT10(M, T)  
+      REAL, intent(IN) :: M, T
+      REAL :: FC10, K100, K10I, KR10, NC10, F10
+      
+      FC10 = 0.4
+
+      K100 = 4.1E-5 * M * EXP(-10650/T)
+      K10I = 6E15 * EXP(-11170/T)
+      KR10 = K100 / K10I
+      
+      NC10 = 0.75 - 1.27 * LOG10(FC10)
+      F10 = 10**(LOG10(FC10)/(1 + (LOG10(KR10)/NC10)**2))
+      KMT10 = (K100 * K10I) * F10 / (K100 + K10I)
+  END FUNCTION KMT10
+
+  ELEMENTAL REAL FUNCTION O3_PHOT(M, C_H2O)
+  
+      REAL, intent(IN) :: M, C_H2O
+      REAL :: K1, K2
+
+      K1 = 2.1e-10
+      K2 = 3.3e-11
+      
+      O3_PHOT = ( 6.52e-5 * K1 * C_H2O ) / ( K2 * M )
+  END FUNCTION O3_PHOT
+#ENDINLINE

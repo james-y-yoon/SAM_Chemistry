@@ -1,0 +1,195 @@
+# 1 "/home/disk/p/jyyoon/hermes/LARGE_EDDY_SIMULATIONS/SAM_CHEM/20251201_GOAMAZON_TUNING/20251201_SOIL_NOx_DIAGNOSTIC/SRC/CHEMISTRY/wet_deposition.f90"
+module wet_deposition
+    
+    use cloudchem_Parameters, only: NVAR
+    use chemistry_params, only: wet_deposition_species, k0_constants, cr_constants, rhol, do_rainout, do_washout, do_convective_scavenging, wet_deposition_time_step
+    use grid, only : z, nzm, nx, ny
+    use cloudchem_Monitor, only: SPC_NAMES
+    use vars, only : qcl, qpl, tabs, w, dtn, precsfc
+
+! Liquid/ice microphysics
+! In this version of the function, we are ignoring ice microphysics!
+
+    real :: areal_fraction = 1
+    real :: R = 0.08205                         ! atm M-1 K-1
+    real :: fraction_in_ice_phase = 0           ! no ice
+    real :: epsilon = 1                         ! Retention factor, 1 because we are ignoring ice!
+
+    CONTAINS
+    
+
+
+    subroutine wet_deposition_driver(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        real, allocatable, dimension(:,:,:,:) :: gchem_field
+        real, allocatable, dimension(:) :: M_profile
+        real, allocatable, dimension(:,:,:) :: change_in_qcl, change_in_qpl
+
+        if ( do_convective_scavenging ) then
+            call convective_scavenging(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        endif
+
+        if ( do_rainout ) then 
+            call rainout(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        endif
+
+        if ( do_washout ) then
+            call washout(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        endif
+    end subroutine wet_deposition_driver
+
+
+
+    subroutine convective_scavenging(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        real, allocatable, dimension(:,:,:,:) :: gchem_field
+        real, allocatable, dimension(:) :: M_profile
+        real, allocatable, dimension(:,:,:) :: change_in_qcl, change_in_qpl
+
+        real :: i, j, k, v, v_selected, updraft_velocity
+        real :: cloud_conversion_rate_constant, fraction_in_liquid_phase, scavenging_rate_constant
+        real :: temp_corrected_Kh, fraction_scavenged, cloud_mixing_ratio_threshold, liquid_water_content
+
+        cloud_mixing_ratio_threshold = 0.01                 ! If we are in a cloud
+        updraft_velocity = 5                                 ! m/s, based on Brasseur
+        temp_corrected_Kh = 0
+
+        do i = 1, nx
+            do j = 1, ny
+                do k = 1, nzm - 1
+                    
+! If we are in an cloud-containing updraft with precipitable water, where precipitable water is increasing
+                    if ( ( w(i,j,k) .gt. updraft_velocity ) .and. ( ( qpl(i,j,k) * 1000. ) .gt. 0 ) .and. ( ( change_in_qpl(i,j,k) * 1000. ) .gt. 0 ) .and. ( ( qcl(i,j,k) * 1000. ) .gt. cloud_mixing_ratio_threshold )) then 
+                        cloud_conversion_rate_constant = 1.0e-2 ! change_in_qpl(i,j,k) / qcl(i,j,k) ! Assumes a first-order process and that all the change in qpl is due to qcl
+
+                        liquid_water_content = qcl(i,j,k) * ( ( M_profile(k) / 6.022e23 * 1e6 * 28.97 / 1000 ) / rhol )  ! qcl in g/kg
+                        
+                        do v_selected = 1, NVAR                                       
+                            do v = 1, NVAR 
+
+                                if ( wet_deposition_species(v_selected) == trim(SPC_NAMES(v)) ) then
+                                    call calculate_henry_law_constant( k0_constants(v_selected), cr_constants(v_selected), tabs(i,j,k), temp_corrected_Kh)
+
+                                    fraction_in_liquid_phase = ( temp_corrected_Kh * liquid_water_content * R * tabs(i,j,k) ) / ( 1 + temp_corrected_Kh * liquid_water_content * R * tabs(i,j,k) )
+                                    scavenging_rate_constant = ( ( epsilon * fraction_in_liquid_phase ) + fraction_in_ice_phase ) * cloud_conversion_rate_constant ! equivalent to k_i in Brasseur
+                                    fraction_scavenged = 1 - exp( -1 * scavenging_rate_constant * ( z(k + 1) - z(k) ) / w(i,j,k) )
+                                    gchem_field(i, j, k, v) = ( 1. - fraction_scavenged ) * gchem_field(i, j, k, v)
+                                    exit
+                                end if
+
+                            end do  
+                        end do                
+                    endif
+                end do
+            end do
+        end do
+    end subroutine convective_scavenging
+
+
+
+    subroutine rainout(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        real, allocatable, dimension(:,:,:,:) :: gchem_field
+        real, allocatable, dimension(:) :: M_profile
+        real, allocatable, dimension(:,:,:) :: change_in_qcl, change_in_qpl
+        
+        real :: i, j, k, v, v_selected
+        real :: cloud_conversion_rate_constant, fraction_in_liquid_phase, rainout_rate_constant, cloud_mixing_ratio_threshold
+        real :: temp_corrected_Kh, fraction_rained_out, liquid_water_content
+
+        cloud_mixing_ratio_threshold = 0.01 ! If we are in a cloud
+        temp_corrected_Kh = 0
+
+        do i = 1, nx
+            do j = 1, ny
+                do k = 1, nzm - 1
+                    
+! If we are in a cloud and precipitation-sized droplet mixing ratio is increasing,
+! Note that qcl and qpl are in kg / kg, NOT g / kg!
+                    if ( ( ( qcl(i,j,k) * 1000. ) .gt. cloud_mixing_ratio_threshold ) .and. ( ( change_in_qpl(i,j,k) * 1000. ) .gt. 0 ) ) then 
+
+                        cloud_conversion_rate_constant = 1e-2 ! change_in_qpl(i,j,k) / qcl(i,j,k) ! Assumes a first-order process and that all the change in qpl is due to qcl
+                        liquid_water_content = qcl(i,j,k) * ( ( M_profile(k) / 6.022e23 * 1e6 * 28.97 / 1000 ) / rhol )  ! qcl in kg/kg
+                        
+! print*, "LWC: ", liquid_water_content
+
+                        do v_selected = 1, NVAR                                       
+                            do v = 1, NVAR    
+
+                                if ( wet_deposition_species(v_selected) == trim(SPC_NAMES(v)) ) then
+                                    call calculate_henry_law_constant( k0_constants(v_selected), cr_constants(v_selected), tabs(i,j,k), temp_corrected_Kh)
+
+                                    fraction_in_liquid_phase = ( temp_corrected_Kh * liquid_water_content * R * tabs(i,j,k) ) / ( 1 + temp_corrected_Kh * liquid_water_content * R * tabs(i,j,k) )
+                                    rainout_rate_constant = ( ( epsilon * fraction_in_liquid_phase ) + fraction_in_ice_phase ) * cloud_conversion_rate_constant ! equivalent to k_i in Brasseur
+                                    fraction_rained_out = areal_fraction * ( 1 - exp( -1 * rainout_rate_constant * dtn * wet_deposition_time_step ) )
+
+                                    gchem_field(i, j, k, v) = ( 1. - fraction_rained_out ) * gchem_field(i, j, k, v)
+                                    exit
+                                end if
+
+                            end do  
+                        end do   
+
+                    endif
+                end do
+            end do
+        end do
+    end subroutine rainout
+
+    subroutine washout(gchem_field, M_profile, change_in_qcl, change_in_qpl)
+        real, allocatable, dimension(:,:,:,:) :: gchem_field
+        real, allocatable, dimension(:) :: M_profile
+        real, allocatable, dimension(:,:,:) :: change_in_qcl, change_in_qpl
+        
+        real :: washout_rate_constant, cloud_mixing_ratio_threshold, precipitation_mixing_ratio_threshold, surface_precipitation_threshold
+        real :: temp_corrected_Kh, fraction_washed_out
+        real :: i, j, k, v, v_selected              ! counter variables
+
+        precipitation_mixing_ratio_threshold = 0.01         ! If we have precipitable droplets, UNCLEAR WHAT THRESHOLD!
+        surface_precipitation_threshold = 1e-7               ! The precipitation must reach the surface, in kg m-2 s-1
+        cloud_mixing_ratio_threshold = 0.01                 ! If we are in a cloud
+        washout_rate_constant = 1                           ! cm-1, typical for soluble species
+        temp_corrected_Kh = 0
+
+! Loop through all boxes
+        do i = 1, nx
+            do j = 1, ny
+                do k = 1, nzm - 1
+
+! If the box is NOT a cloud AND there is precipitable water
+! Essentially, we do not want washout where there is rainout!
+                    if ( ( ( qcl(i,j,k) * 1000 ) .lt. cloud_mixing_ratio_threshold ) .and. ( ( qpl(i,j,k) * 1000 ) .gt. precipitation_mixing_ratio_threshold ) .and. ( precsfc(i, j) .gt. surface_precipitation_threshold ) ) then   
+
+! Loop through all the species to see if it is wet deposited
+                        do v_selected = 1, NVAR                                       
+                            do v = 1, NVAR   
+                                
+! If wet deposited,
+                                if ( wet_deposition_species(v_selected) == trim(SPC_NAMES(v)) ) then
+                                    call calculate_henry_law_constant( k0_constants(v_selected), cr_constants(v_selected), tabs(i,j,k), temp_corrected_Kh)
+                                    
+! IF SOLUBLE,
+                                    if ( temp_corrected_Kh .gt. 1e4 ) then      ! If very soluble species, then kinetic-limited
+                                        fraction_washed_out = areal_fraction * ( 1. - exp( -1 * washout_rate_constant * ( ( precsfc(i,j) / 10 ) / areal_fraction ) * dtn * wet_deposition_time_step ) ) ! precsfc in kg m-2 s-1 --> cm/s
+! timestep is needed because we call wet deposition, but not at every chem step!
+                                        gchem_field(i, j, k, v) = ( 1. - fraction_washed_out ) * gchem_field(i, j, k, v)
+                                    endif
+
+                                    exit
+                                end if
+                            
+                            end do  
+                        end do                
+                    
+                    endif
+
+                end do
+            end do
+        end do
+    end subroutine washout
+    
+    subroutine calculate_henry_law_constant(K0, CR, temperature, henry_law_constant)
+        real :: K0, CR, temperature, henry_law_constant, temperature_ref
+        temperature_ref = 298.15
+        
+        henry_law_constant = K0 * exp( CR * ( 1 / temperature - 1 / temperature_ref ) )
+    end subroutine calculate_henry_law_constant
+
+end module wet_deposition

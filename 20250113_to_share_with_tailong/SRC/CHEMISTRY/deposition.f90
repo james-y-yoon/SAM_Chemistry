@@ -1,0 +1,32 @@
+module deposition
+    
+    use cloudchem_Parameters, only: NVAR
+    use chemistry_params, only: dry_deposition_species, dry_deposition_velocities
+    use grid, only : z
+    use cloudchem_Monitor, only: SPC_NAMES
+
+    CONTAINS
+    
+    ! Note (JY): Could also use fluxbch instead of subtracting directly from gchem_field
+    ! I kept it as the latter, since in the future we might want to have deposition in gridboxes not at the surface (e.g. leaves)
+    subroutine dry_deposition_driver(gchem_field, g_depos_horiz_mean_tend_ISOPOOH, g_depos_horiz_mean_tend_IEPOX)
+        real, allocatable, dimension(:,:,:,:) :: gchem_field
+        real, allocatable, dimension(:) :: g_depos_horiz_mean_tend_ISOPOOH
+        real, allocatable, dimension(:) :: g_depos_horiz_mean_tend_IEPOX
+
+        real :: i, j, v, v_selected
+        real :: bottommost_layer_height
+
+        bottommost_layer_height = ( z(2) - z(1) ) * 100 ! Convert from m to cm
+        
+        do v_selected = 1, NVAR                                         ! v_selected is the index of the deposition array
+            do v = 1, NVAR                                              ! v is the index of the species list (e.g. gchem_fields)
+                if ( dry_deposition_species(v_selected) == trim(SPC_NAMES(v)) ) then
+                    gchem_field(i, j, 1, v) = ( 1. - ( dry_deposition_velocities(v_selected) * dtn ) / bottommost_layer_height ) * gchem_field(i, j, 1, v)
+                    exit
+                end if
+            end do  
+        end do
+    end subroutine dry_deposition_driver
+
+end module deposition

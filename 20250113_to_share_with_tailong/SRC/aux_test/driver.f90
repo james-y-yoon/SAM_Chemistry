@@ -1,0 +1,17 @@
+program driver
+
+use chemistry_aux
+
+implicit none
+
+real, dimension(10) :: time
+integer :: i
+
+do i = 1,10
+   print *, get_OH(float(i))
+end do
+
+
+
+
+end program driver

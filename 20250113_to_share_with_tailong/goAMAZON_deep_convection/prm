@@ -1,0 +1,213 @@
+&PARAMETERS
+    !! RUN CONTROLS !!
+    caseid                  = 'agu_production',
+    nrestart                = 1,
+    nrestart_skip           = 1000,
+
+    nstop                   = 518400,
+    day0                    = 64,
+
+    nprint                  = 100,
+    nstat 	      	    = 300,
+    nstatfrq                = 30,
+    doSAMconditionals       = .false.,
+    dosatupdnconditionals   = .false.,
+
+    nsave2D	                = 7200,
+    nsave2Dstart	        = 0,
+    nsave2Dend	            = 99997200,
+    save2Dbin               = .true.,
+
+    nsave3D	                = 300,
+    nsave3Dstart            = 0,
+    nsave3Dend	            = 999999999,
+    save3Dbin               = .true.,
+
+    !! PHYSICS CONTROLS !!
+    dx                      = 66.66666,
+    ! dy		            = 66.66666,
+    doconstdz               = .false.,
+    dt                      = 1.0,
+    
+    LES                     = .true.,
+    LAND                    = .true.,
+    soil_wetness            = 0.86,
+    OCEAN                   = .false.,
+
+    dosgs		             = .true.,
+    dodamping 	            = .true.,
+    doupperbound            = .true.,
+    docloud 	            = .true.,
+    doprecip 	            = .true.,
+
+    longitude0              = -59.002,
+    latitude0               = -2.144,
+    docoriolis  	    = .true.,
+    
+    dolongwave	            = .true.,
+    doshortwave	            = .true.,
+    nrad                    = 30,
+    doperpetual             = .false.,
+    doseasons               = .true.,
+    doradforcing            = .false.,
+    doradsimple             = .false., 
+    rad3Dout                = .false.,
+
+    dosurface 	            = .true.,
+    dolargescale 	    = .true.,
+    dosfcforcing            = .true.,
+
+    donudging_uv            = .false.,
+    donudging_tq            = .false.,
+    nudging_t_z1            = 2500.,
+    nudging_q_z1            = 2500.,
+    tauls                   = 3600.,
+
+    SFC_FLX_FXD             = .true.,
+    SFC_TAU_FXD             = .false.,
+
+    ug                      = 0.0,
+    vg                      = 0.0,
+    
+    perturb_type            = 1,
+
+&CHEMISTRY
+    
+    !! PARAMETERS !!
+
+    !! DRY DEPOSITION !!
+    dry_deposition_species    = 'NO2', 'O3', 'HNO3', 'ISOPOOH', 'IEPOX', 'ISOP1Nit', 'ISOPDiNit' 
+    dry_deposition_velocities = 0.3, 0.6, 2, 0.01, 0.01, 0.01, 0.01        ! Dry deposition velocities, in cm-1 s !! [Adon et al, Adon et al (wet, daytime), Adon et al.]
+
+    !! WET DEPOSITION !!
+    do_convective_scavenging = .true.
+    do_rainout = .true.
+    do_washout = .true.
+    
+    wet_deposition_time_step = 60
+    wet_deposition_species = 'O3', 'H2O2', 'ROOH', 'CH3OOH', 'HCHO', 'HNO3', 'ISOPOOH', 'IEPOX', 'ISOP1Nit', 'PAN'
+    k0_constants = 0.0101325e0, 8.3e+4, 2.94e+2, 2.94e+2, 3.24e+3, 1.7e+6, 8.0e+7, 1.7e+4, 2.94
+    cr_constants = 2800.0, 7400.0, 5200.0, 5200.0, 6800.0, 0.0, 0.0, 9200.0, 5700.0
+
+    !! CHEMICAL SWITCHES !!
+    do_only_tropospheric_chemistry = .true.,
+    do_transport_loss       = .false.,
+
+    !! SURFACE EMISSIONS !!
+    do_megan_isoprene       = .true.            ! Choose either MEGAN isoprene or diurnal isoprene!
+    do_surface_Isoprene_diurnal = .false.,
+    do_bdsnp_no             = .true.,
+    
+    !! LIGHTNING EMISSIONS !!
+    do_CTG_lightning        = .true.,
+    do_IC_lightning         = .true.,
+
+    IC_decaria              = .true.,
+    CTG_decaria_reflectivity = .true.,
+    CTG_price_and_rind      = .false.,
+
+    !! PHOTOLYSIS !!
+    do_NO2_photolysis = .true.
+    do_O3_photolysis = .true.
+    do_H2O2_photolysis = .true.
+    do_HCHO_photolysis = .true.
+    do_NO3_photolysis = .true.
+    do_ISOPOOH_photolysis = .true.
+
+    !! HETEROGENEOUS CHEMISTRY !!
+    do_iepox_droplet_chem   = .true.,
+    do_iepox_aero_chem      = .true.,
+    hi_org                  = .false.,
+
+    pHdrop                  = 5.,
+    pHaero                  = 4.,
+
+    !! ONLY WITH FIXED OH !!
+    do_OH_diurnal           = .false.,
+    do_surface_Isoprene_diurnal = .false.,
+
+    !! OUTPUT VARIABLES !!
+    gas_init_name           = 'OH', 'CO', 'O3', 'HCHO'
+    gas_init_value          = 0.000204349, 100, 40, 0.25
+    
+    gas_out3D_name          =  'ISOP', 'IEPOX', 'PAN', 'NO', 'NO2', 'PAN', 'HCHO', 'OH'
+
+
+&MICRO_M2005_MA
+    doicemicro              = .false.,
+    dograupel               = .true.,
+
+    !bloss: first option, fixed cloud droplet number concentration (from LES specs)
+    dopredictNc             = .true.,
+    Nc0                     = 30.,
+    dospecifyaerosol        = .true.,
+    doprogaerosol           = .true.,
+
+    dogaschem               = .false.,
+    doH2SO4uptake           = .false.,
+    doaqchem                = .false.,
+    dofixedH2O2             = .true.,
+    dofixedDMS              = .true.,
+    doDMSsurfflux           = .true.,
+
+    doprecoff               = .false.,
+    dosedoff                = .false.,
+    doevapnc                = .true.,
+    docloudedgeactivation   = .false.,
+    dofixedcoarsemode       = .false.,
+    doacttransfer           = .false.,
+
+    ! docldselfcollect      = .false.,
+    douse_reffc             = .true.,
+    massfactor              = 1.,
+    dototalwater            = .false.,
+    do_output_micro_process_rates = .false.,
+
+    docoagulation           = .false.,
+    coag_zmax               = 1800.,
+    do_m2011_scavenge       = .false.,
+    nscv                    = 3,
+
+    aerinitmode             = 3,
+    aerinitFTfrac_acc       = 0.5,
+    aerinitFTfrac_ait       = 3.33333333,
+    aerfluxmode             = 2,
+    sflux_nacc_coef         = 43730000.,
+    sflux_nait_coef         = 43730000.,
+    sflux_racc              = 0.15,
+    sflux_rait              = 0.015,
+
+    DMSoceanconc            = 2.8e-6,
+    DMSinit_bl              = 1.e-10,
+    DMSinit_trop            = 0.,
+    SO2init                 = 6.e-11,
+    H2SO4init               = 5.e-14,
+    H2O2init                = 7.e-10,
+
+    rm_accum                = 0.1,
+    N_accum                 = 80.,
+    sigma_accum             = 1.6,
+
+    rm_aitken               = 0.015,
+    N_aitken                = 30.,
+    sigma_aitken            = 1.3,
+
+    doreflectivity_cloudradar = .true.,
+    freq_cloudradar = 10.,
+
+
+ &UWOPTIONS
+    !dosfcflx_eachgrid                  = .true.,
+    !do_smooth_reference_density        = .true.,
+    !dodynamiceps                       = .true.
+    !ncyclemin                          = 1
+    !ncyclemax                          = 30
+    nelapsemin                          = 1400
+    !cfl_safety_factor                  = 1.1
+
+    !dotauz_tq                          = .true.,
+    !domovingtauz                       = .true.,
+    !tauz_tau                           = 3600.,
+    !tauzO1                             = 150.,
+    !tauzO2                             = 300.,
+/

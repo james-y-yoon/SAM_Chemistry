@@ -1,0 +1,210 @@
+# 1 "/home/disk/p/jyyoon/hermes/LARGE_EDDY_SIMULATIONS/SAM_CHEM/20251201_GOAMAZON_TUNING/20251201_SOIL_NOx_DIAGNOSTIC/SRC/CHEMISTRY/photolysis.f90"
+module photolysis
+
+    use grid, only : nx, ny, nz, nzm
+
+    use chemistry_params, only : do_O3_photolysis, &
+       do_NO2_photolysis, do_H2O2_photolysis, do_HCHO_photolysis, do_NO3_photolysis, &
+       do_ISOPOOH_photolysis
+    
+    use cloudchem_Parameters, only : ind_NO2, ind_O3, ind_OH, ind_H2O2, &
+        ind_HCHO, ind_HO2, ind_CO, ind_NO, ind_NO3, ind_ISOPOOH
+    
+    CONTAINS
+    
+    subroutine photolysis_driver(gchem_field, M_profile)
+        use grid, only : time, z, dz, nz, dtn
+! use chemistry_aux, only : get_NO2_photolysis_rate
+        use rad, only : insolation_TOA, swDownSurface
+
+        implicit none
+
+        real, allocatable, dimension(:,:,:, :) :: gchem_field
+        real, allocatable, dimension(:) :: M_profile
+
+        real, allocatable, dimension(:,:,:) :: photolysis_rate
+        real, allocatable, dimension(:,:,:) :: change_in_mixing_ratio
+
+        integer :: i, j, k, n
+
+        allocate(change_in_mixing_ratio(nz, ny, nzm))
+        change_in_mixing_ratio = 0.
+        photolysis_rate = 0.
+
+        if (do_NO2_photolysis) then
+            photolysis_rate = calculate_photolysis_rate(1.2E-2)
+            change_in_mixing_ratio = gchem_field(:,:,:,ind_NO2) * ( photolysis_rate * dtn )
+            gchem_field(:,:,:,ind_NO2) = gchem_field(:,:,:,ind_NO2) - change_in_mixing_ratio
+            gchem_field(:,:,:,ind_NO) = gchem_field(:,:,:,ind_NO) + change_in_mixing_ratio
+            gchem_field(:,:,:,ind_O3) = gchem_field(:,:,:,ind_O3) + change_in_mixing_ratio
+        end if 
+
+        if (do_NO3_photolysis) then
+            photolysis_rate = calculate_photolysis_rate(2.8E-4)
+            change_in_mixing_ratio = gchem_field(:,:,:,ind_NO3) * ( photolysis_rate * dtn )
+            gchem_field(:,:,:,ind_NO3) = gchem_field(:,:,:,ind_NO3) - change_in_mixing_ratio
+            gchem_field(:,:,:,ind_NO2) = gchem_field(:,:,:,ind_NO2) + change_in_mixing_ratio
+        end if 
+
+        if (do_ISOPOOH_photolysis) then
+            photolysis_rate = calculate_photolysis_rate(9.9E-6)
+            change_in_mixing_ratio = gchem_field(:,:,:,ind_ISOPOOH) * ( photolysis_rate * dtn )
+
+            gchem_field(:,:,:,ind_ISOPOOH) = gchem_field(:,:,:,ind_ISOPOOH) - change_in_mixing_ratio
+            gchem_field(:,:,:,ind_OH) = gchem_field(:,:,:,ind_OH) + 2 * change_in_mixing_ratio
+            gchem_field(:,:,:,ind_HCHO) = gchem_field(:,:,:,ind_HCHO) + change_in_mixing_ratio
+        end if 
+
+        if (do_HCHO_photolysis) then
+            photolysis_rate = calculate_photolysis_rate(9.8E-5)
+            change_in_mixing_ratio = gchem_field(:,:,:,ind_HCHO) * ( photolysis_rate * dtn )
+            gchem_field(:,:,:,ind_HCHO) = gchem_field(:,:,:,ind_HCHO) - change_in_mixing_ratio
+            gchem_field(:,:,:,ind_HO2) = gchem_field(:,:,:,ind_HO2) + 2 * change_in_mixing_ratio
+            gchem_field(:,:,:,ind_CO) = gchem_field(:,:,:,ind_CO) + change_in_mixing_ratio
+        end if 
+
+        if (do_H2O2_photolysis) then
+            photolysis_rate = calculate_photolysis_rate(1.18E-6)
+            change_in_mixing_ratio = gchem_field(:,:,:,ind_H2O2) * ( photolysis_rate * dtn )
+            gchem_field(:,:,:,ind_H2O2) = gchem_field(:,:,:,ind_H2O2) - change_in_mixing_ratio
+            gchem_field(:,:,:,ind_OH) = gchem_field(:,:,:,ind_OH) + 2 * change_in_mixing_ratio
+        end if 
+
+        if (do_O3_photolysis) then
+            photolysis_rate = calculate_photolysis_rate_O3(M_profile)
+            change_in_mixing_ratio = gchem_field(:,:,:,ind_O3) * ( photolysis_rate * dtn )
+            gchem_field(:,:,:,ind_O3) = gchem_field(:,:,:,ind_O3) - change_in_mixing_ratio
+            gchem_field(:,:,:,ind_OH) = gchem_field(:,:,:,ind_OH) + 2 * change_in_mixing_ratio
+        end if 
+
+    end subroutine photolysis_driver
+
+    function calculate_radiation_flux() result(radiation_flux)
+! Calculates the radiation at a certain layer using simple linear interpolation
+        use rad, only : insolation_TOA, swDownSurface, swDown
+        use grid, only : z, dz, nz, dtn, nzm
+
+        implicit none
+
+! Parameters
+        real, allocatable, dimension(:,:,:) :: radiation_flux
+        integer :: i, j, k 
+        real :: slope = 0.
+        logical :: do_linear_interpolation = .false.
+        
+        allocate(radiation_flux(nx, ny, nz))
+        radiation_flux = 0.
+
+        if ( do_linear_interpolation ) then
+            if ( allocated(swDownSurface) .and. allocated(insolation_TOA) ) then 
+                do i = 1, nx
+                    do j = 1, ny
+                        radiation_flux(i,j,1) = swDownSurface(i,j)                                             ! Bottommost layer is shortwave at surface
+                        radiation_flux(i,j,nz) = insolation_TOA(i,j)                                           ! Topmost layer is shortwave at ToA
+                        
+                        slope = ( radiation_flux(i,j,nz) - radiation_flux(i,j,1) ) / ( z(nz) - z(1) )          ! Slope to interpolate between the two
+
+                        do k = 1, nz
+                        radiation_flux(i,j,k) = radiation_flux(i,j,1) + ( slope * (z(k) - z(1)) )
+                        enddo
+                    enddo
+                enddo
+            endif
+
+        else
+            if ( allocated(swDown) ) then
+                do i = 1, nx
+                    do j = 1, ny
+                        do k = 1, nzm
+                            radiation_flux(i,j,k) = swDown(i,k)
+! if ( radiation_flux(i,j,k) .gt. 0 ) then
+!     print*, 'Radiative flux = ', radiation_flux(i,j,k)
+! endif
+                        enddo
+                    enddo
+                enddo
+            endif
+        endif
+
+    end function calculate_radiation_flux
+
+    function calculate_photolysis_rate(maximum) result(photolysis_rate)
+! Calculates the photolysis loss frequency for a species
+        use grid, only : z, dz, nz, nzm, dtn
+
+        implicit none
+
+! Parameters
+        real :: maximum
+        real, allocatable, dimension(:,:,:) :: photolysis_rate
+        real, allocatable, dimension(:,:,:) :: radiation_flux
+
+        integer :: i, j, k 
+        real :: maximum_radiation_flux_TOA = 1000.
+        
+        allocate(radiation_flux(nx, ny, nz))
+        allocate(photolysis_rate(nx, ny, nz))
+
+        radiation_flux = 0.
+        photolysis_rate = 0.
+
+        radiation_flux = calculate_radiation_flux()
+        
+        do i = 1, nx
+            do j = 1, ny
+                do k = 1, nz
+                    photolysis_rate(i,j,k) = MIN( (radiation_flux(i,j,k) / maximum_radiation_flux_TOA) * maximum, maximum )
+                    
+                    if ( photolysis_rate(i,j,k) .lt. 0 ) then
+                    photolysis_rate(i,j,k) = 0.
+                    endif
+
+                enddo
+            enddo
+        enddo
+    end function calculate_photolysis_rate
+
+    function calculate_photolysis_rate_O3(M_profile) result(photolysis_rate)
+! Calculates the photolysis loss frequency for a species
+        use vars, only : qv0
+        implicit none
+
+! Parameters
+        real, allocatable, dimension(:) :: M_profile
+        
+        real, allocatable, dimension(:,:,:) :: photolysis_rate
+        real, allocatable, dimension(:,:,:) :: radiation_flux
+        real, allocatable, dimension(:) :: maximum_photolysis_frequency
+
+        integer :: i, j, k 
+        real :: maximum_radiation_flux_TOA = 1000.
+
+        real :: k1 = 2.1e-10       ! corresponds to O(1D) + H2O  --> 2 OH
+        real :: k2 = 3.3e-11       ! corresponds to O(1D) + N2  --> O(3P) + N2
+        
+        allocate(radiation_flux(nx, ny, nz))
+        allocate(photolysis_rate(nx, ny, nz))
+        allocate(maximum_photolysis_frequency(nz))
+
+        radiation_flux = 0.
+        photolysis_rate = 0.
+
+        radiation_flux = calculate_radiation_flux()
+        
+        do i = 1, nx
+            do j = 1, ny
+
+                maximum_photolysis_frequency = 6.52e-5 * (k1 * qv0 / 1000. * 28.97/18.02 *  M_profile) / (k2 * M_profile)
+                
+                do k = 1, nz
+                    photolysis_rate(i,j,k) = MIN( (radiation_flux(i,j,k) / maximum_radiation_flux_TOA) * maximum_photolysis_frequency(k), maximum_photolysis_frequency(k) )
+                    
+                    if ( photolysis_rate(i,j,k) .lt. 0 ) then
+                    photolysis_rate(i,j,k) = 0.
+                    endif
+                enddo
+            enddo
+        enddo
+    end function calculate_photolysis_rate_O3
+
+end module photolysis

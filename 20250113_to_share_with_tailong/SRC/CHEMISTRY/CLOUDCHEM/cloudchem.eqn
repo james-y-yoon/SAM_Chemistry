@@ -1,0 +1,62 @@
+#EQUATIONS {CloudChem Mechanism}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// %%%%% Gas-phase reactions                                             %%%%%
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//
+
+<R1> ISOP + OH = ISOP1O2                                                    	                 : ARR_ab(2.10E-11, -465.);
+<R2> ISOP1O2 + HO2 = ISOPOOH                                                                     : ARR_ab(2.91E-13, -1300.);
+<R3> ISOP1O2 + NO = 0.105 ISOP1Nit + 0.896 C4CBYL + 0.896 NO2 + 0.896 HCHO + 0.896 HO2           : ARR_ab(2.7E-12, -360.);
+<R4> ISOP1O2 + RO2 = 0.3 ISOP1OH + 0.7 C4CBYL + 0.4 HO2                                          : 1.E-12;
+<R5> ISOP1O2 + ISOP1O2 = 2 C4CBYL + 2 CO + 2 HO2                                                 : 1.E-12;
+<R6> ISOPOOH + OH = 0.7 IEPOX + 0.7 OH + 0.3 ISOP2O2                                             : 1.54E-10;
+<R7> ISOP2O2 = DHHPEPOX + OH                                                                     : ARR_ab(3.3e12, 8660.);
+<R8> ISOP2O2 + HO2 = ISOPDHDHP                                                                   : ARR_ab(2.91E-13, -1300.);
+<R9> ISOP2O2 + NO = 0.13 ISOPDHHPNit + 0.87 C4CBYL + 0.87 NO2 + 0.87 HCHO                        : ARR_ab(2.7E-12, -360.);
+<R10> ISOP2O2 + RO2 = 0.3 ISOPTHHP + 0.7 C4CBYL + 0.7 HCHO                                       : 1.e-12;
+<R11> ISOP1Nit + OH = ISOP1NitO2                                                                 : 2.17e-11;
+<R12> ISOP1NitO2 + HO2 = ISOP1NitHP                                                              : ARR_ab(2.91E-13, -1300.);
+<R13> ISOP1NitO2 + NO = 0.16 ISOPDiNit + 0.84 C4CBYLNit + 0.84 NO2 + 0.84 HCHO                   : ARR_ab(2.7E-12, -360.);
+<R14> ISOP1NitO2 + RO2 = 0.3 ISOPTHNit + 0.7 C4CBYLNit + 0.7 HCHO                                : 1.E-12;
+<R15> IEPOX + OH = C4CBYL + HCHO                                                                 : 8.4E-12;
+<R16> DHHPEPOX + OH = C4CBYL + HCHO + OH                                                         : 8.4E-12;
+<R17> C4CBYL + OH = C4CBYLO2                                                                     : ARR_ab(8.0e-12, -380.);
+<R18> C4CBYLO2 + NO2 = PAN                                                                       : KFPAN(C_M, TEMP);
+<R19> PAN = RO2 + NO2                                                                            : KBPAN(C_M, TEMP);
+<R20> C4CBYLO2 + NO = 0.07 C4CBYLNit + 1.86 HCHO + 1.86 CO + 0.93 NO2 + 0.93 HO2                 : ARR_ab(2.7E-12, -360.);
+<R21> ISOPDiNit + OH = C4CBYLNit + HCHO + NO2 + HO2                                              : 1.63E-12;
+<R22> ISOPDHDHP + OH = C4CBYL + HCHO                                                             : ARR_ab(1.05E-11, -465.);
+<R23> C4CBYLNit + OH = 2HCHO + 2CO + NO2 + HO2                                                   : ARR_ab(2.6E-12, -610.);
+<R24> ISOPDHHPNit + OH = C4CBYLNit + HCHO                                                        : ARR_ab(1.05e-11, -465.);
+<R25> ISOPTHHP + OH = C4CBYL + HCHO                                                              : ARR_ab(1.05e-11, -465.);
+<R26> NO + O3 = NO2                                                                              : ARR_ab(2.07E-12, 1400.);
+<R27> OH + O3 = HO2                                                                              : ARR_ab(1.7E-12, 940.);
+<R28> HO2 + O3 = OH                                                                              : ARR_abc(2.03E-16, 693., 4.57);
+<R29> HO2 + NO = OH + NO2                                                                        : ARR_ab(3.45E-12, -270.);
+<R30> OH + NO2 = HNO3                                                                            : K1(C_M, TEMP);
+<R31> OH + HNO3 = NO3                                                                            : KMT11(C_M, TEMP);
+<R32> NO + NO3 = 2NO2                                                                            : ARR_ab(1.8E-11, -110.);
+<R33> HO2 + NO2 = HNO4                                                                           : KMT09(C_M, TEMP);
+<R34> OH + HNO4 = NO2                                                                            : ARR_ab(3.2E-13, -690.);
+<R35> OH + HO2 = INRT                                                                            : ARR_ab(4.4E-11, -250.);
+<R36> OH + HCHO = HO2 + CO                                                                       : ARR_ab(5.4E-12, -135.);
+<R37> HO2 + HO2 = H2O2                                                                           : K2(C_M, TEMP, C_H2O);
+<R38> OH + CO = HO2                                                                              : KMT05(C_M);
+<R39> OH + CH4 = RO2                                                                             : ARR_ab(1.85E-12, 1690.);
+<R40> HO2 + RO2 = ROOH                                                                           : ARR_ab(2.7E-12, -360.);
+<R41> RO2 + NO = HCHO + NO2                                                                      : ARR_ab(2.7E-12, -360.);
+<R42> HNO4 = HO2 + NO2                                                                     	 : KMT10(C_M, TEMP);
+<R43> ISOP + NO3 = ISOP1Nit                                                                      : ARR_ab(2.95E-12, 450.);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// %%%%% Photolysis reactions                                            %%%%%
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//
+<R44> O3 + hv = 2OH										: O3_PHOT(C_M, C_H2O);
+<R45> H2O2 + hv = 2OH										: 1.18e-6 * SUN;
+<R46> CH3OOH + hv = OH										: 9.9e-6 * SUN;
+<R47> HCHO + hv = 2HO2 + CO									: 9.8e-5 * SUN;
+<R48> NO2 + hv = NO + O3									: 1.2e-2 * SUN;
+<R49> NO3 + hv = NO2										: 2.8e-4 * SUN;
+<R48> ISOPOOH + hv = 2OH + HCHO									: 9.9e-6 * SUN;
